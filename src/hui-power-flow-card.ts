@@ -216,8 +216,10 @@ class HuiPowerFlowCard extends LitElement implements LovelaceCard {
     }
     let gridInRoute: ElecRoute | null = null;
     if (this._config.power_from_grid_entity) {
+      console.log("power_from_grid_entity: '", this._config.power_from_grid_entity, "'");
       const stateObj = this.hass.states[this._config.power_from_grid_entity];
       if (!stateObj) {
+        console.log("power_from_grid_entity not found");
         return html`
           <hui-warning>
             ${createEntityNotFoundWarning(
@@ -239,6 +241,7 @@ class HuiPowerFlowCard extends LitElement implements LovelaceCard {
     if (this._config.power_to_grid_entity) {
       const stateObj = this.hass.states[this._config.power_to_grid_entity];
       if (!stateObj) {
+        console.log("power_to_grid_entity not found");
         return html`
           <hui-warning>
             ${createEntityNotFoundWarning(
@@ -261,6 +264,7 @@ class HuiPowerFlowCard extends LitElement implements LovelaceCard {
       for (const entity of this._config.generation_entities) {
         const stateObj = this.hass.states[entity];
         if (!stateObj) {
+          console.log("generation entity '", entity, "' not found");
           return html`
             <hui-warning>
               ${createEntityNotFoundWarning(this.hass, entity)}
@@ -284,6 +288,7 @@ class HuiPowerFlowCard extends LitElement implements LovelaceCard {
         stateObj = this.hass.states[entity.entity];
         let name = entity.name;
         if (!stateObj) {
+          console.log("consumer entity '", entity, "' not found");
           return html`
             <hui-warning>
               ${createEntityNotFoundWarning(this.hass, entity.entity)}

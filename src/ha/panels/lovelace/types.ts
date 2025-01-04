@@ -1,9 +1,12 @@
+import { HaFormSchema } from "../../../utils/form/ha-form";
 import {
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../data/lovelace";
 import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
+import type { LovelaceRowConfig } from "./entity-rows/types";
+import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 
 declare global {
   // eslint-disable-next-line
@@ -46,27 +49,27 @@ export interface LovelaceCard extends HTMLElement {
   setConfig(config: LovelaceCardConfig): void;
 }
 
-// export interface LovelaceConfigForm {
-//   schema: HaFormSchema[];
-//   assertConfig?: (config: LovelaceCardConfig) => void;
-//   computeLabel?: (
-//     schema: HaFormSchema,
-//     localize: LocalizeFunc
-//   ) => string | undefined;
-//   computeHelper?: (
-//     schema: HaFormSchema,
-//     localize: LocalizeFunc
-//   ) => string | undefined;
-// }
+export interface LovelaceConfigForm {
+  schema: HaFormSchema[];
+  assertConfig?: (config: LovelaceCardConfig) => void;
+  computeLabel?: (
+    schema: HaFormSchema,
+    localize: undefined //LocalizeFunc
+  ) => string | undefined;
+  computeHelper?: (
+    schema: HaFormSchema,
+    localize: undefined //LocalizeFunc
+  ) => string | undefined;
+}
 
-// export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
-//   getStubConfig?: (
-//     hass: HomeAssistant,
-//     entities: string[],
-//     entitiesFallback: string[]
-//   ) => LovelaceCardConfig;
-//   getConfigElement?: () => LovelaceCardEditor;
-// }
+export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceCardConfig;
+  getConfigElement?: () => LovelaceCardEditor;
+}
 
 // export interface LovelaceHeaderFooterConstructor
 //   extends Constructor<LovelaceHeaderFooter> {
@@ -82,6 +85,15 @@ export interface LovelaceCard extends HTMLElement {
 //   getConfigElement?: () => LovelaceRowEditor;
 // }
 
+export interface LovelaceElementConstructor
+  extends Constructor<LovelaceElement> {
+  getConfigElement?: () => LovelacePictureElementEditor;
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceElementConfig;
+}
 // export interface LovelaceHeaderFooter extends HTMLElement {
 //   hass?: HomeAssistant;
 //   type: "header" | "footer";
@@ -98,9 +110,14 @@ export interface LovelaceCard extends HTMLElement {
 //   setConfig(config: LovelaceHeaderFooterConfig): void;
 // }
 
-// export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
-//   setConfig(config: LovelaceRowConfig): void;
-// }
+export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceRowConfig): void;
+}
+
+export interface LovelacePictureElementEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceElementConfig): void;
+}
 
 export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
@@ -110,9 +127,10 @@ export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
 //   setConfig(config: LovelaceBadgeConfig): void;
 // }
 
-export interface LovelaceGenericElementEditor extends HTMLElement {
+export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
+  context?: C;
   setConfig(config: any): void;
   focusYamlEditor?: () => void;
 }

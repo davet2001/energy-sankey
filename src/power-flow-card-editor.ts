@@ -6,6 +6,7 @@ import { html, LitElement, nothing } from "lit";
 import { HomeAssistant, LocalizeFunc } from "./ha/types";
 import { HaFormSchema } from "./utils/form/ha-form";
 import "./ha/panels/lovelace/editor/hui-entities-card-row-editor";
+import "./ha/panels/lovelace/editor/hui-sub-element-editor";
 import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "./ha/common/dom/fire_event";
 import type {
@@ -226,6 +227,7 @@ export class PowerFlowCardEditor extends LitElement implements LovelaceCardEdito
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    console.log("####_editDetailElement####");
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 

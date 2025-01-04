@@ -17,10 +17,10 @@ import type { LovelaceElementConfig } from "../elements/types";
 //   };
 // }
 
-// export interface GUIModeChangedEvent {
-//   guiMode: boolean;
-//   guiModeAvailable: boolean;
-// }
+export interface GUIModeChangedEvent {
+  guiMode: boolean;
+  guiModeAvailable: boolean;
+}
 
 // export interface ViewEditEvent extends Event {
 //   detail: {

@@ -1016,6 +1016,8 @@ export class ElecSankey extends LitElement {
   }
 
   protected render(): TemplateResult {
+    console.log("###rendering sankey####")
+
     this._recalculate();
     const [x0, y0, x1, y1, x2, y2, x10, y10] = this._calc_xy();
 
