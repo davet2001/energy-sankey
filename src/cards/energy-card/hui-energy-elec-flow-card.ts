@@ -6,7 +6,7 @@ import { classMap } from "lit/directives/class-map.js";
 
 //import "../../../../components/chart/ha-chart-base";
 //import "../../../../components/ha-card";
-import type { ElecRoute, ElecRoutePair } from "./elec-sankey";
+import type { ElecRoute, ElecRoutePair } from "../../elec-sankey";
 import {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference, /// done
@@ -14,20 +14,20 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
-} from "./ha/data/energy";
+} from "../../ha/data/energy";
 import {
   calculateStatisticsSumGrowth,
   getStatisticLabel,
-} from "./ha/data/recorder";
-import { SubscribeMixin } from "./ha/mixins/subscribe-mixin";
-import { HomeAssistant } from "./ha/types";
+} from "../../ha/data/recorder";
+import { SubscribeMixin } from "../../ha/mixins/subscribe-mixin";
+import { HomeAssistant } from "../../ha/types";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-} from "./ha/panels/lovelace/types";
-import { EnergyElecFlowCardConfig } from "./types";
+} from "../../ha/panels/lovelace/types";
+import { EnergyElecFlowCardConfig } from "../../types";
 
-import { registerCustomCard } from "./utils/custom-cards";
+import { registerCustomCard } from "../../utils/custom-cards";
 import {
   ENERGY_CARD_EDITOR_NAME,
   HIDE_CONSUMERS_BELOW_THRESHOLD_KWH,

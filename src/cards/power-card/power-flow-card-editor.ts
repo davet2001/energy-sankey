@@ -1,27 +1,28 @@
 import { customElement, property, state } from "lit/decorators";
 
-import { LovelaceCardEditor } from "./ha/panels/lovelace/types";
-import { PowerFlowCardConfig } from "./types";
+import { LovelaceCardEditor } from "../../ha/panels/lovelace/types";
+import { PowerFlowCardConfig } from "../../types";
 import { html, LitElement, nothing } from "lit";
-import { HomeAssistant, LocalizeFunc } from "./ha/types";
-import { HaFormSchema } from "./utils/form/ha-form";
-import "./ha/panels/lovelace/editor/hui-entities-card-row-editor";
+import { HomeAssistant, LocalizeFunc } from "../../ha/types";
+import { HaFormSchema } from "../../utils/form/ha-form";
+// import "./ha/panels/lovelace/editor/hui-entities-card-row-editor";
 import memoizeOne from "memoize-one";
-import { fireEvent, HASSDomEvent } from "./ha/common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../ha/common/dom/fire_event";
 import type {
   EditorTarget,
   EditDetailElementEvent,
   SubElementEditorConfig,
-} from "./ha/panels/lovelace/editor/types";
+} from "../../ha/panels/lovelace/editor/types";
 
-import { GENERIC_LABELS, POWER_CARD_EDITOR_NAME } from "./const";
+import { GENERIC_LABELS } from "../../const";
+import { POWER_CARD_EDITOR_NAME } from "./const";
 import {
   EntityConfig,
   LovelaceRowConfig,
-} from "./ha/panels/lovelace/entity-rows/types";
-import { processEditorEntities } from "./ha/panels/lovelace/editor/process-editor-entities";
+} from "../../ha/panels/lovelace/entity-rows/types";
+import { processEditorEntities } from "../../ha/panels/lovelace/editor/process-editor-entities";
 import { mdiPalette, mdiWrench } from "@mdi/js";
-import setupCustomlocalize from "./localize";
+import setupCustomlocalize from "../../localize";
 import { verifyAndMigrateConfig } from "./hui-power-flow-card";
 
 const POWER_LABELS = [

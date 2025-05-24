@@ -11,28 +11,23 @@ import {
 import { mdiSolarPower } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { ElecRoute, ElecRoutePair } from "./elec-sankey";
-import { applyThemesOnElement } from "./ha/common/dom/apply_themes_on_element";
-import { computeStateName } from "./ha/common/entity/compute_state_name";
-import { isValidEntityId } from "./ha/common/entity/valid_entity_id";
-import type { HomeAssistant } from "./ha/types";
-import { createEntityNotFoundWarning } from "./ha/panels/lovelace/components/hui-warning";
+import { ElecRoute, ElecRoutePair } from "../../elec-sankey";
+import { applyThemesOnElement } from "../../ha/common/dom/apply_themes_on_element";
+import { computeStateName } from "../../ha/common/entity/compute_state_name";
+import type { HomeAssistant } from "../../ha/types";
+import { createEntityNotFoundWarning } from "../../ha/panels/lovelace/components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-} from "./ha/panels/lovelace/types";
-import type { PowerFlowCardConfig } from "./types";
-import { hasConfigChanged } from "./ha/panels/lovelace/common/has-changed";
-import { registerCustomCard } from "./utils/custom-cards";
-import {
-  DeviceConsumptionEnergyPreference,
-  getEnergyPreferences,
-} from "./ha/data/energy";
+} from "../../ha/panels/lovelace/types";
+import type { PowerFlowCardConfig } from "../../types";
+import { hasConfigChanged } from "../../ha/panels/lovelace/common/has-changed";
+import { registerCustomCard } from "../../utils/custom-cards";
+import { getEnergyPreferences, EnergyPreferences } from "../../ha/data/energy";
 import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
-} from "./ha/data/entity_registry";
-//import "./power-flow-card-editor"
+} from "../../ha/data/entity_registry";
 
 export function verifyAndMigrateConfig(config: PowerFlowCardConfig) {
   if (!config) {
@@ -99,6 +94,15 @@ function computePower(stateObj: HassEntity): number {
   } else {
     return state;
   }
+}
+
+function htmlHuiWarning(hass: HomeAssistant, entity: string): TemplateResult {
+  /**
+   * Returns a not found warning for the given entity name.
+   */
+  return html`<hui-warning
+    >${createEntityNotFoundWarning(hass, entity)}</hui-warning
+  >`;
 }
 
 @customElement("hui-power-flow-card")
@@ -225,7 +229,7 @@ export class HuiPowerFlowCard extends LitElement implements LovelaceCard {
      * help to the user.
      */
 
-    const energyPrefs = await getEnergyPreferences(_hass);
+    const energyPrefs: EnergyPreferences = await getEnergyPreferences(_hass);
     const extEntities: { [id: string]: ExtEntityRegistryEntry } =
       await this.getExtendedEntityRegistryEntries(_hass);
 
@@ -347,14 +351,7 @@ export class HuiPowerFlowCard extends LitElement implements LovelaceCard {
     if (config.independent_grid_in_out && config.power_to_grid_entity) {
       const stateObj = this.hass.states[config.power_to_grid_entity];
       if (!stateObj) {
-        return html`
-          <hui-warning>
-            ${createEntityNotFoundWarning(
-              this.hass,
-              config.power_to_grid_entity
-            )}
-          </hui-warning>
-        `;
+        return htmlHuiWarning(this.hass, config.power_to_grid_entity);
       }
       gridOutRoute = {
         id: config.power_to_grid_entity,
@@ -364,23 +361,20 @@ export class HuiPowerFlowCard extends LitElement implements LovelaceCard {
     }
 
     const generationInRoutes: { [id: string]: ElecRoute } = {};
-    if (config.generation_entities) {
-      for (const entity of config.generation_entities) {
-        const stateObj = this.hass.states[entity];
-        if (!stateObj) {
-          return html`
-            <hui-warning>
-              ${createEntityNotFoundWarning(this.hass, entity)}
-            </hui-warning>
-          `;
-        }
-        generationInRoutes[entity] = {
-          id: entity,
-          text: computeStateName(stateObj),
-          rate: computePower(stateObj),
-          icon: mdiSolarPower,
-        };
+    for (const entity of [config.generation_entity]) {
+      if (!entity) {
+        continue;
       }
+      const stateObj = this.hass.states[entity];
+      if (!stateObj) {
+        return htmlHuiWarning(this.hass, entity);
+      }
+      generationInRoutes[entity] = {
+        id: entity,
+        text: computeStateName(stateObj),
+        rate: computePower(stateObj),
+        icon: mdiSolarPower,
+      };
     }
 
     const consumerRoutes: { [id: string]: ElecRoute } = {};
@@ -388,14 +382,10 @@ export class HuiPowerFlowCard extends LitElement implements LovelaceCard {
       for (const entity of config.consumer_entities) {
         let stateObj: HassEntity;
         stateObj = this.hass.states[entity.entity];
-        let name = entity.name;
         if (!stateObj) {
-          return html`
-            <hui-warning>
-              ${createEntityNotFoundWarning(this.hass, entity.entity)}
-            </hui-warning>
-          `;
+          return htmlHuiWarning(this.hass, entity.entity);
         }
+        let name = entity.name;
         if (!name) {
           name = computeStateName(stateObj);
         }
@@ -413,11 +403,7 @@ export class HuiPowerFlowCard extends LitElement implements LovelaceCard {
         stateObj = this.hass.states[entity.entity];
         let name = entity.name;
         if (!stateObj) {
-          return html`
-            <hui-warning>
-              ${createEntityNotFoundWarning(this.hass, entity.entity)}
-            </hui-warning>
-          `;
+          return htmlHuiWarning(this.hass, entity.entity);
         }
         if (!name) {
           name = computeStateName(stateObj);
