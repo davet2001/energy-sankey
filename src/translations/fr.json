@@ -1,0 +1,27 @@
+{
+  "editor": {
+    "card": {
+      "generic": {
+       "title": "Titre",
+       "max_consumer_branches": "Limiter le nombre de consommateur (0 pour illimité)",
+       "appearance": "Apparence",
+       "advanced_options": "Options avancée"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Puissance depuis le réseaux (optionnel)",
+        "power_to_grid_entity": "Puissance vers le réseaux (optionnel)",
+        "generation_entity": "Puissance depuis les générateur/solaire (optionnel)",
+        "hide_small_consumers": "Groupper les consommateurs de moins de 20W",
+        "invert_battery_flows": "Le flux de batterie sont positifs pour la charge",
+        "battery_charge_only_from_generation": "Les batteries ne peuvent se charger qu'à partir de l'énergie générée",
+        "battery_hint_std": "Puissance depuis les batteries (une entrée/sortie combinée par batterie, positive = décharge)",
+        "battery_hint_inverted": "Puissance vers les batteries (une entrée/sortie combinée par batterie, positif = charge)",
+        "independent_grid_in_out": "Utiliser des capteurs séparés pour l'entrée/sortie du réseau"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Regrouper les consommateurs de moins de 0,1 kWh",
+        "battery_charge_only_from_generation": "Les batteries ne peuvent se charger qu'à partir de l'énergie générée"
+      }
+    }
+  }
+}
