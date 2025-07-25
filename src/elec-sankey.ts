@@ -87,6 +87,14 @@ export interface ElecRoutePair {
   out: ElecRoute;
 }
 
+export interface ElecConsumerRoute extends ElecRoute {
+  mix?: {
+    rateGrid: number; // Amount of flow from the grid.
+    rateGeneration: number; // Amount of flow from generation.
+    rateBattery: number; // Amount of flow from batteries.
+  };
+}
+
 function debugPoint(x: number, y: number, label: string): TemplateResult {
   return svg`
     <circle cx="${x}" cy="${y}" r="3" fill="#22DDDD" />
@@ -179,8 +187,8 @@ function line_intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
  * bezier shape to join them. This is useful for creating a flow map where
  * there are significant changes in direction but we don't want curves to
  * overlap.
- * An extreme fan-out a spread out list could result in significant overlap
- * if this were to be constructed with curves of constant width.
+ * An extreme fan-out with a spread out list could result in significant
+ * overlap if this were to be constructed with curves of constant width.
  */
 function renderFlowByCorners(
   startLX: number,
@@ -192,7 +200,8 @@ function renderFlowByCorners(
   endRX: number,
   endRY: number,
   classname: string = "",
-  color: string | null = null
+  colorStart: string | null = null,
+  colorEnd: string | null = null
 ): TemplateResult {
   // Don't attempt to draw curves for very narrow lines
   if (
@@ -261,8 +270,27 @@ function renderFlowByCorners(
   const [bezierEndLX, bezierEndLY, ,] = ret2;
   const [bezierEndRX, bezierEndRY, ,] = ret3;
   const [bezierStartRX, bezierStartRY, ,] = ret4;
-  const fillspec = color ? "fill:" + color : "";
+  let fillspec;
+  if (colorStart && colorEnd) {
+    fillspec = `fill:url('#grad_${colorStart}_${colorEnd}')`;
+  } else if (colorStart && !colorEnd) {
+    fillspec = `fill:${colorStart}`;
+  } else {
+    fillspec = "";
+  }
   const svg_ret = svg`
+    ${
+      colorStart && colorEnd
+        ? svg`
+  <defs>
+    <linearGradient id="grad_${colorStart}_${colorEnd}">
+      <stop offset="0%" style="stop-color:${colorStart};stop-opacity:1" />
+      <stop offset="100%" style="stop-color:${colorEnd};stop-opacity:1" />
+    </linearGradient>
+  </defs>
+      `
+        : nothing
+    }
   <path
       class="flow ${classname}"
       d="M ${startLX},${startLY}
@@ -291,7 +319,7 @@ export function renderRect(
   y="${y}"
   height="${height}"
   width="${width}"
-  style=${styleString}
+  style="${styleString}"
   />`;
 }
 
@@ -465,7 +493,7 @@ export class ElecSankey extends LitElement {
   public gridOutRoute?: ElecRoute;
 
   @property({ attribute: false })
-  public consumerRoutes: { [id: string]: ElecRoute } = {};
+  public consumerRoutes: { [id: string]: ElecConsumerRoute } = {};
 
   @property({ attribute: false })
   public batteryRoutes: { [id: string]: ElecRoutePair } = {};
@@ -1425,9 +1453,9 @@ export class ElecSankey extends LitElement {
     topLeftY: number,
     topRightX: number,
     topRightY: number,
-    consumer: ElecRoute,
-    color: string,
-    svgScaleX: number,
+    consumer: ElecConsumerRoute,
+    colorStart: string,
+    svgScaleX: number = 1,
     count: number = 1
   ): [
     TemplateResult,
@@ -1440,6 +1468,17 @@ export class ElecSankey extends LitElement {
     const width = this._rateToWidth(consumer.rate);
     const xEnd = topRightX;
     const yEnd = topRightY + width / 2;
+    let colorEnd: string | null = null;
+    if (consumer.mix && consumer.rate > 0.01) {
+      colorEnd = mix3Hexes(
+        this._gridColor(),
+        this._genColor(),
+        this._battColor(),
+        consumer.mix.rateGrid / consumer.rate,
+        consumer.mix.rateGeneration / consumer.rate,
+        consumer.mix.rateBattery / consumer.rate
+      );
+    }
     const svgFlow = renderFlowByCorners(
       topLeftX,
       topLeftY,
@@ -1450,14 +1489,18 @@ export class ElecSankey extends LitElement {
       topRightX + PAD_ANTIALIAS,
       topRightY + width,
       "consumer",
-      color
+      colorStart,
+      colorEnd
     );
+    if (!colorEnd) {
+      colorEnd = colorStart;
+    }
     const extrasLength = this._getExtrasLength();
     const svgExtras = this._insertExtras(
       topRightX,
       topRightY,
       width,
-      color,
+      colorEnd,
       consumer
     );
 
@@ -1478,7 +1521,7 @@ export class ElecSankey extends LitElement {
       <polygon points="${extrasLength},${yEnd - width / 2}
         ${extrasLength},${yEnd + width / 2}
         ${extrasLength + ARROW_HEAD_LENGTH},${yEnd}"
-        style="fill:${color}" />
+        style="fill:${colorEnd}" />
     `;
 
     const bottomLeftY = topLeftY + (consumer.rate !== 0 ? width : 0);
@@ -1821,7 +1864,7 @@ export class ElecSankey extends LitElement {
     battToConsFlow: number
   ): string {
     const total = genToConsFlow + gridToConsFlow + battToConsFlow;
-    if (total === 0) {
+    if (total < 0.01) {
       return this._gridColor();
     }
     return mix3Hexes(
