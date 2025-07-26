@@ -47,6 +47,26 @@ If you've already installed HACS (https://hacs.xyz/), click this button and then
   - The energy card does not require configuration
   - The power card auto configures. If there are any problems with autoconfiguration, use built in card editor to select the correct power entities for grid input / generation / consumers / batteries.
 
+## Language Translations
+
+If you would like to see this card translated into your own language, your contribution is most welcome!
+
+It's not to difficult to do; it can be done via a web browser.
+Examples of how others have done it are in recent pull requests e.g. #121, #138.
+
+In short the process is:
+
+- Open the most recent [primary lanugage file](blob/main/src/translations/en.json) `en.json`.
+- Copy the contents to the clipboard
+- Navigate to the `translations/` parent directory by clicking 'translations'.
+- Click 'Add file' to create a new file e.g. `de.json`
+- Paste in the contents
+- Translate to the new language
+- Save the file in a new branch
+- Create a pull request for this branch
+- (To do the complete job...) Within the branch, edit `src/localize.ts` and uncomment the new language.
+- Thank you so much for your contributions!
+
 ## Outstanding issues to solve:
 
 - [ ] Sometimes there are thin dark lines between the blocks that make up the shapes, I believe this is caused by antialiasing, but I don't see an easy way of reducing/eliminating it, especially where the shapes are across two divs.
