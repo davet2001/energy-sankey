@@ -167,27 +167,32 @@ export class EnergyElecFlowCard
     const prefs = energyData.prefs;
     const types = energySourcesByType(prefs);
 
-    const totalFromGrid =
-      calculateStatisticsSumGrowth(
-        energyData.stats,
-        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-      ) ?? 0;
-    const gridInId = types.grid![0].flow_from[0].stat_energy_from;
-    this._gridInRoute = {
-      id: gridInId,
-      rate: totalFromGrid,
-    };
-
-    const totalToGrid =
-      calculateStatisticsSumGrowth(
-        energyData.stats,
-        types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-      ) ?? 0;
-    const gridOutId = types.grid![0].flow_to[0].stat_energy_to;
-    this._gridOutRoute = {
-      id: gridOutId,
-      rate: totalToGrid,
-    };
+    if (types.grid && types.grid.length >= 1) {
+      if (types.grid[0].flow_from.length >= 1) {
+        const totalFromGrid =
+          calculateStatisticsSumGrowth(
+            energyData.stats,
+            types.grid[0].flow_from.map((flow) => flow.stat_energy_from)
+          ) ?? 0;
+        const gridInId = types.grid[0].flow_from[0].stat_energy_from;
+        this._gridInRoute = {
+          id: gridInId,
+          rate: totalFromGrid,
+        };
+      }
+      if (types.grid[0].flow_to.length >= 1) {
+        const totalToGrid =
+          calculateStatisticsSumGrowth(
+            energyData.stats,
+            types.grid[0].flow_to.map((flow) => flow.stat_energy_to)
+          ) ?? 0;
+        const gridOutId = types.grid[0].flow_to[0].stat_energy_to;
+        this._gridOutRoute = {
+          id: gridOutId,
+          rate: totalToGrid,
+        };
+      }
+    }
 
     solarSources.forEach((source) => {
       const label = getStatisticLabel(
