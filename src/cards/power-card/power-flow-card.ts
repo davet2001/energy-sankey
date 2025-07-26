@@ -35,7 +35,7 @@ import {
   HIDE_CONSUMERS_BELOW_THRESHOLD_W,
 } from "./const";
 import { ElecFlowCardBase } from "../../shared/elec-flow-card-base";
-import setupCustomlocalize from "../../localize";
+import { setupCustomlocalize } from "../../localize";
 
 const DEFAULT_CONFIG: PowerFlowCardConfig = {
   type: `custom:${POWER_CARD_NAME}`,

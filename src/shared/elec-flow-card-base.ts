@@ -1,6 +1,6 @@
 import { LitElement } from "lit";
 import { SubscribeMixin } from "../ha/mixins/subscribe-mixin";
-import setupCustomlocalize from "../localize";
+import { setupCustomlocalize } from "../localize";
 import { property } from "lit/decorators";
 import { HomeAssistant } from "../ha/types";
 

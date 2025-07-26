@@ -7,7 +7,7 @@ import { HomeAssistant } from "./ha/types";
 import { formatNumber } from "./ha/common/number/format_number";
 
 import { fireEvent } from "./ha/common/dom/fire_event";
-import setupCustomlocalize from "./localize";
+import { setupCustomlocalize } from "./localize";
 
 // Additional items from frontend src/dialogs/more-info/ha-more-info-dialog.ts
 type View = "info" | "history" | "settings" | "related";

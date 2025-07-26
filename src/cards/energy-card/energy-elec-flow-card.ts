@@ -34,7 +34,7 @@ import {
   HIDE_CONSUMERS_BELOW_THRESHOLD_KWH,
 } from "./const";
 import { ElecFlowCardBase } from "../../shared/elec-flow-card-base";
-import setupCustomlocalize from "../../localize";
+import { setupCustomlocalize } from "../../localize";
 
 const DEFAULT_CONFIG: EnergyElecFlowCardConfig = {
   type: `custom:${ENERGY_CARD_NAME}`,

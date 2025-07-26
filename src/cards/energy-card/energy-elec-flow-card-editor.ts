@@ -10,7 +10,7 @@ import { fireEvent } from "../../ha/common/dom/fire_event";
 import { ENERGY_CARD_EDITOR_NAME } from "./const";
 import { GENERIC_LABELS } from "../../const";
 import { mdiPalette } from "@mdi/js";
-import setupCustomlocalize from "../../localize";
+import { languages, setupCustomlocalize } from "../../localize";
 import { verifyAndMigrateConfig } from "./energy-elec-flow-card";
 
 const ENERGY_LABELS = [
@@ -81,6 +81,7 @@ export class EnergyFlowCardEditor
     }
 
     const data = { ...this._config } as any;
+    const language = this.hass.locale.language;
     return html`
       <ha-form
         .hass=${this.hass}
@@ -94,14 +95,26 @@ export class EnergyFlowCardEditor
         <a href="/config/energy">Energy Dashboard Config</a>. They cannot be
         modified via the card configuration.
       </ha-alert>
-      <ha-alert alert-type="info">
-        Please note that this card is in development! If you see a bug or a
-        possible improvement, please use the
-        <a href="https://github.com/davet2001/energy-sankey/issues"
-          >issue tracker</a
-        >
-        to help us improve it!
-      </ha-alert>
+      ${!(language in languages)
+        ? html` <ha-alert alert-type="info" .title="Translations Wanted!">
+            Do you want this card translated into ${language}? If you would like
+            to translate this card into additional languages, please see the
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/davet2001/energy-sankey#language-translations"
+              >project page</a
+            >
+            for instructions on how to contribute! Thanks!
+          </ha-alert>`
+        : html` <ha-alert alert-type="info">
+            Please note that this card is in development! If you see a bug or a
+            possible improvement, please use the
+            <a href="https://github.com/davet2001/energy-sankey/issues"
+              >issue tracker</a
+            >
+            to help us improve it!
+          </ha-alert>`}
     `;
   }
 

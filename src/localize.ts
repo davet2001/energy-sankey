@@ -31,7 +31,7 @@ import * as fr from "./translations/fr.json";
 // import * as zh_Hans from "./translations/zh-Hans.json";
 // import * as zh_Hant from "./translations/zh-Hant.json";
 
-const languages: Record<string, unknown> = {
+export const languages: Record<string, unknown> = {
   //   ar,
   //   bg,
   //   ca,
@@ -80,7 +80,7 @@ function getTranslatedString(key: string, lang: string): string | undefined {
   }
 }
 
-export default function setupCustomlocalize(hass?: HomeAssistant) {
+export function setupCustomlocalize(hass?: HomeAssistant) {
   return function (key: string) {
     const lang = hass?.locale.language ?? DEFAULT_LANG;
 
