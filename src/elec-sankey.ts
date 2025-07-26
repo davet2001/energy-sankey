@@ -360,7 +360,7 @@ function renderBlendRect(
   return svgRet;
 }
 /**
- * Sorts ElecRoute objects by their rate in descending/descending order.
+ * Sorts ElecRoute objects by their rate in ascending or descending order.
  */
 function sortRoutesByRate(
   routes: { [id: string]: ElecRoute },
@@ -374,7 +374,7 @@ function sortRoutesByRate(
       : (b.rate || 0) - (a.rate || 0);
   });
   let ret: { [id: string]: ElecRoute } = {};
-  for (const val of Object.values(routesSorted)) {
+  for (const val of routesSorted) {
     if (!val.id) {
       console.warn("Skipping route without id:", val);
       continue;
