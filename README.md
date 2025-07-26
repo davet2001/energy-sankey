@@ -52,7 +52,7 @@ If you've already installed HACS (https://hacs.xyz/), click this button and then
 If you would like to see this card translated into your own language, your contribution is most welcome!
 
 It's not too difficult to do; it can be done via a web browser.
-Examples of how others have done it are in recent pull requests e.g. #121, #138.
+Examples of how others have done it are in recent pull requests e.g. [#121](pull/121), [#138[(pull/138).
 
 In short the process is:
 
