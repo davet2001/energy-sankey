@@ -61,7 +61,7 @@ export class EnergyFlowCardEditor
     this._config = verifyAndMigrateConfig(config);
   }
 
-  private _computeLabel = (schema: HaFormSchema) => {
+  private _computeLabel = (schema: HaFormSchema): string => {
     const customLocalize = setupCustomlocalize(this.hass!);
 
     if (GENERIC_LABELS.includes(schema.name)) {

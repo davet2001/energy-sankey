@@ -14,10 +14,10 @@
   "editor": {
     "card": {
       "generic": {
-       "title": "Titre",
-       "max_consumer_branches": "Limiter le nombre de consommateur (0 pour illimité)",
-       "appearance": "Apparence",
-       "advanced_options": "Options avancée"
+        "title": "Titre",
+        "max_consumer_branches": "Limiter le nombre de consommateur (0 pour illimité)",
+        "appearance": "Apparence",
+        "advanced_options": "Options avancée"
       },
       "power_sankey": {
         "power_from_grid_entity": "Puissance depuis le réseaux (optionnel)",

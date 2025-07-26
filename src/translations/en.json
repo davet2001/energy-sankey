@@ -14,10 +14,10 @@
   "editor": {
     "card": {
       "generic": {
-       "title": "Title",
-       "max_consumer_branches": "Limit quantity of consumer branches (0 for unlimited)",
-       "appearance": "Appearance",
-       "advanced_options": "Advanced Options"
+        "title": "Title",
+        "max_consumer_branches": "Limit quantity of consumer branches (0 for unlimited)",
+        "appearance": "Appearance",
+        "advanced_options": "Advanced Options"
       },
       "power_sankey": {
         "power_from_grid_entity": "Power from grid (optional)",
@@ -37,4 +37,3 @@
     }
   }
 }
-
