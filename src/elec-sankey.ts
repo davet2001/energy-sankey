@@ -470,6 +470,11 @@ export class ElecSankey extends LitElement {
 
   private _generationToConsumersRate: number = 0;
 
+  protected _localize = (key: string, fallBack?: string) => {
+    // This is a simple localizer that can be overridden by the parent class.
+    return fallBack || key;
+  };
+
   private _generationTrackedTotal(): number {
     let totalGen = 0;
     for (const key in this.generationInRoutes) {
@@ -758,7 +763,7 @@ export class ElecSankey extends LitElement {
         : undefined;
     this._untrackedConsumerRoute = {
       id: UNTRACKED_ID,
-      text: "Untracked",
+      text: this._localize("untracked", "Untracked"),
       rate: untrackedConsumer > 0 ? untrackedConsumer : 0,
     };
 
@@ -1445,7 +1450,7 @@ export class ElecSankey extends LitElement {
 
     let groupedConsumer: ElecRoute = {
       id: OTHER_ID,
-      text: "Other",
+      text: this._localize("other", "Other"),
       rate: 0,
     };
     let groupedConsumerExists = false;

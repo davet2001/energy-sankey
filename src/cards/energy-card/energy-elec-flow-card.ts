@@ -33,6 +33,8 @@ import {
   ENERGY_CARD_NAME,
   HIDE_CONSUMERS_BELOW_THRESHOLD_KWH,
 } from "./const";
+import { ElecFlowCardBase } from "../../shared/elec-flow-card-base";
+import setupCustomlocalize from "../../localize";
 
 const DEFAULT_CONFIG: EnergyElecFlowCardConfig = {
   type: `custom:${ENERGY_CARD_NAME}`,
@@ -70,11 +72,9 @@ registerCustomCard({
 
 @customElement(ENERGY_CARD_NAME)
 export class EnergyElecFlowCard
-  extends SubscribeMixin(LitElement)
+  extends ElecFlowCardBase
   implements LovelaceCard
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state() private _config?: EnergyElecFlowCardConfig;
 
   @state() private _gridInRoute?: ElecRoute;
@@ -112,8 +112,13 @@ export class EnergyElecFlowCard
     this._config = verifyAndMigrateConfig(config);
   }
 
-  static getStubConfig(): EnergyElecFlowCardConfig {
-    return DEFAULT_CONFIG;
+  static getStubConfig(hass: HomeAssistant): EnergyElecFlowCardConfig {
+    // We don't have access to instance localizer yet, so set up a temp one.
+    const localize = setupCustomlocalize(hass);
+    let config = DEFAULT_CONFIG;
+    config.title = localize("card.energy_sankey.energy_distribution_today");
+
+    return config;
   }
 
   protected render() {

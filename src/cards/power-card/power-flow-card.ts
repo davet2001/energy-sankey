@@ -34,6 +34,8 @@ import {
   POWER_CARD_EDITOR_NAME,
   HIDE_CONSUMERS_BELOW_THRESHOLD_W,
 } from "./const";
+import { ElecFlowCardBase } from "../../shared/elec-flow-card-base";
+import setupCustomlocalize from "../../localize";
 
 const DEFAULT_CONFIG: PowerFlowCardConfig = {
   type: `custom:${POWER_CARD_NAME}`,
@@ -127,9 +129,7 @@ function htmlHuiWarning(hass: HomeAssistant, entity: string): TemplateResult {
 }
 
 @customElement(POWER_CARD_NAME)
-export class PowerFlowCard extends LitElement implements LovelaceCard {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   @state() protected _config?: PowerFlowCardConfig;
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -254,7 +254,10 @@ export class PowerFlowCard extends LitElement implements LovelaceCard {
     const extEntities: { [id: string]: ExtEntityRegistryEntry } =
       await this.getExtendedEntityRegistryEntries(_hass);
 
+    // We don't have access to instance localizer here, so set up a temp one.
+    const localize = setupCustomlocalize(_hass);
     let returnConfig: PowerFlowCardConfig = DEFAULT_CONFIG;
+    returnConfig.title = localize("card.power_sankey.live_power_flow");
     // Parse energy sources from HA's energy prefs
     for (const source of energyPrefs.energy_sources) {
       switch (source.type) {

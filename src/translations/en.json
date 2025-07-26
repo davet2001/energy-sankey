@@ -1,4 +1,16 @@
 {
+  "card": {
+    "generic": {
+      "other": "Other",
+      "untracked": "Untracked"
+    },
+    "power_sankey": {
+      "live_power_flow": "Live power flow"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Energy distribution today"
+    }
+  },
   "editor": {
     "card": {
       "generic": {

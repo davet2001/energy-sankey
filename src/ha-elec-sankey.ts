@@ -7,6 +7,7 @@ import { HomeAssistant } from "./ha/types";
 import { formatNumber } from "./ha/common/number/format_number";
 
 import { fireEvent } from "./ha/common/dom/fire_event";
+import setupCustomlocalize from "./localize";
 
 // Additional items from frontend src/dialogs/more-info/ha-more-info-dialog.ts
 type View = "info" | "history" | "settings" | "related";
@@ -29,6 +30,25 @@ declare global {
 @customElement("ha-elec-sankey")
 export class HaElecSankey extends ElecSankey {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  private _localizer: (key: string) => string = (key: string): string => {
+    return key;
+  };
+
+  private _localizerIsSetup = false;
+
+  protected _localize = (key: string): string => {
+    if (!this._localizerIsSetup) {
+      this._localizer = setupCustomlocalize(this.hass);
+      this._localizerIsSetup = true;
+    }
+    // The low level card ElecSankey doesn't know anything about the card
+    // prefix, so we need to add it here.
+    if (!key.startsWith("card.")) {
+      key = "card.generic." + key;
+    }
+    return this._localizer(key);
+  };
 
   protected _generateLabelDiv(
     id: string | undefined,
