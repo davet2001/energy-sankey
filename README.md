@@ -51,12 +51,12 @@ If you've already installed HACS (https://hacs.xyz/), click this button and then
 
 If you would like to see this card translated into your own language, your contribution is most welcome!
 
-It's not to difficult to do; it can be done via a web browser.
+It's not too difficult to do; it can be done via a web browser.
 Examples of how others have done it are in recent pull requests e.g. #121, #138.
 
 In short the process is:
 
-- Open the most recent [primary lanugage file](blob/main/src/translations/en.json) `en.json`.
+- Open the most recent [primary language file](blob/main/src/translations/en.json) `en.json`.
 - Copy the contents to the clipboard
 - Navigate to the `translations/` parent directory by clicking 'translations'.
 - Click 'Add file' to create a new file e.g. `de.json`
