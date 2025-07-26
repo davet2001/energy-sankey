@@ -167,8 +167,8 @@ export class EnergyElecFlowCard
     const prefs = energyData.prefs;
     const types = energySourcesByType(prefs);
 
-    if (types.grid && types.grid.length >= 1) {
-      if (types.grid[0].flow_from.length >= 1) {
+    if (types.grid && types.grid.length > 0) {
+      if (types.grid[0].flow_from.length > 0) {
         const totalFromGrid =
           calculateStatisticsSumGrowth(
             energyData.stats,
