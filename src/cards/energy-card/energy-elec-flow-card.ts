@@ -180,7 +180,7 @@ export class EnergyElecFlowCard
           rate: totalFromGrid,
         };
       }
-      if (types.grid[0].flow_to.length >= 1) {
+      if (types.grid[0].flow_to.length > 0) {
         const totalToGrid =
           calculateStatisticsSumGrowth(
             energyData.stats,
