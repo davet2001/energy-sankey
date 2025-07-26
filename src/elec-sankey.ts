@@ -359,7 +359,42 @@ function renderBlendRect(
   `;
   return svgRet;
 }
+/**
+ * Sorts ElecRoute objects by their rate in descending/descending order.
+ */
+function sortRoutesByRate(
+  routes: { [id: string]: ElecRoute },
+  ascending: boolean
+): {
+  [id: string]: ElecRoute;
+} {
+  const routesSorted = Object.values(routes).sort((a, b) => {
+    return ascending
+      ? (a.rate || 0) - (b.rate || 0)
+      : (b.rate || 0) - (a.rate || 0);
+  });
+  let ret: { [id: string]: ElecRoute } = {};
+  for (const val of Object.values(routesSorted)) {
+    if (!val.id) {
+      console.warn("Skipping route without id:", val);
+      continue;
+    }
+    ret[val.id] = val;
+  }
+  return ret;
+}
 
+function sortRoutesByRateDescending(routes: { [id: string]: ElecRoute }): {
+  [id: string]: ElecRoute;
+} {
+  return sortRoutesByRate(routes, false);
+}
+
+function sortRoutesByRateAscending(routes: { [id: string]: ElecRoute }): {
+  [id: string]: ElecRoute;
+} {
+  return sortRoutesByRate(routes, true);
+}
 /**
  * Creates a flow map graphic showing the flow of electricity.
  *
@@ -1439,14 +1474,8 @@ export class ElecSankey extends LitElement {
   }
 
   private _getGroupedConsumerRoutes(): { [id: string]: ElecRoute } {
-    let consumerRoutes: { [id: string]: ElecRoute } = {};
-    const entries: Array<[string, ElecRoute]> = Object.entries(
-      this.consumerRoutes
-    );
-    entries.sort(([, routeA], [, routeB]) => routeB.rate - routeA.rate);
-    for (const [key, val] of Object.entries(entries)) {
-      consumerRoutes[key] = val[1];
-    }
+    let consumerRoutes: { [id: string]: ElecRoute } =
+      sortRoutesByRateDescending(this.consumerRoutes);
 
     let groupedConsumer: ElecRoute = {
       id: OTHER_ID,
@@ -1470,11 +1499,9 @@ export class ElecSankey extends LitElement {
       const numConsumerRoutes = Object.keys(consumerRoutes).length;
       if (numConsumerRoutes > this.maxConsumerBranches - 1) {
         let otherCount = numConsumerRoutes + 2 - this.maxConsumerBranches;
-        consumerRoutes = this.consumerRoutes;
-        const sortedConsumerRoutes: ElecRoute[] = Object.values(
-          this.consumerRoutes
-        ).sort((a, b) => (a.rate || 0) - (b.rate || 0));
-        sortedConsumerRoutes.forEach((route) => {
+        const ascendingConsumerRoutes =
+          sortRoutesByRateAscending(consumerRoutes);
+        for (const route of Object.values(ascendingConsumerRoutes)) {
           if (otherCount > 0) {
             groupedConsumer.rate += route.rate || 0;
             groupedConsumerExists = true;
@@ -1483,9 +1510,11 @@ export class ElecSankey extends LitElement {
             }
             otherCount--;
           }
-        });
+        }
       }
     }
+    // Re-sort the consumer routes - deleting can break the order (issue #128).
+    consumerRoutes = sortRoutesByRateDescending(consumerRoutes);
     if (groupedConsumerExists) {
       consumerRoutes[groupedConsumer.id!] = groupedConsumer;
     }
