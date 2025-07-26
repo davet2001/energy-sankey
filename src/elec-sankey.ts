@@ -1142,14 +1142,11 @@ export class ElecSankey extends LitElement {
     y10: number,
     svgScaleX: number
   ): [TemplateResult | symbol, TemplateResult | symbol] {
-    let gridRoute: ElecRoute | undefined = undefined;
-    if (this.gridInRoute) {
-      gridRoute = { ...this.gridInRoute, icon: mdiTransmissionTower };
-    } else if (this.gridOutRoute) {
-      gridRoute = { ...this.gridOutRoute, icon: mdiTransmissionTower };
-    } else if (this._phantomGridInRoute) {
-      gridRoute = { ...this._phantomGridInRoute, icon: mdiHelpRhombus };
-    }
+    const gridRoute =
+      this.gridInRoute ||
+      this.gridOutRoute ||
+      this._phantomGridInRoute ||
+      undefined;
     if (!gridRoute) {
       return [nothing, nothing];
     }
@@ -1169,7 +1166,7 @@ export class ElecSankey extends LitElement {
     >
       ${this._generateLabelDiv(
         gridRoute.id,
-        gridRoute.icon,
+        gridRoute.icon || mdiTransmissionTower,
         undefined,
         rateA,
         rateB,
