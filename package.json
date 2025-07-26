@@ -1,6 +1,6 @@
 {
   "name": "energy-sankey-cards",
-  "version": "0.0.23",
+  "version": "0.0.24.dev",
   "description": "Home Assistant Energy Sankey Cards",
   "main": "energy-sankey.js",
   "scripts": {
