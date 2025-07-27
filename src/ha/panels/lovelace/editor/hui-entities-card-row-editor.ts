@@ -242,6 +242,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entities-card-row-editor": HuiEntitiesCardRowEditor;
+    "elec-sankey-hui-entities-card-row-editor": HuiEntitiesCardRowEditor;
   }
 }
