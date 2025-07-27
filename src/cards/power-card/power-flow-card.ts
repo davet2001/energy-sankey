@@ -379,7 +379,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
     }
 
     const generationInRoutes: { [id: string]: ElecRoute } = {};
-    for (const entity of [config.generation_entity]) {
+    for (const entity of [config.generation_entities]) {
       if (!entity) {
         continue;
       }
