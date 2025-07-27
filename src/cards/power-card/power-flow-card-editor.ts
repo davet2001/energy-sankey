@@ -21,6 +21,7 @@ import {
   LovelaceRowConfig,
 } from "../../ha/panels/lovelace/entity-rows/types";
 import { processEditorEntities } from "../../ha/panels/lovelace/editor/process-editor-entities";
+import "../../ha/panels/lovelace/editor/hui-entities-card-row-editor";
 import { mdiPalette, mdiWrench } from "@mdi/js";
 import setupCustomlocalize from "../../localize";
 import { verifyAndMigrateConfig } from "./power-flow-card";
