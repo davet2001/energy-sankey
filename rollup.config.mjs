@@ -3,8 +3,26 @@ import json from "@rollup/plugin-json";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import alias from "@rollup/plugin-alias";
+import { execSync } from "child_process";
+
+const autoGitPackageVersionPlugin = {
+  name: "auto-git-package-version",
+
+  buildStart() {
+    try {
+      execSync("scripts/update_package_json_version.sh", {
+        stdio: "inherit",
+        cwd: process.cwd(),
+      });
+    } catch (error) {
+      console.error("auto-git-package-version script failed:", error.message);
+      throw error;
+    }
+  },
+};
 
 const plugins = [
+  autoGitPackageVersionPlugin,
   typescript({
     declaration: false,
   }),
