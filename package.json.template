@@ -1,0 +1,54 @@
+{
+  "name": "energy-sankey-cards",
+  "version": "0.0.0",
+  "description": "Home Assistant Energy Sankey Cards",
+  "main": "energy-sankey.js",
+  "scripts": {
+    "start": "rollup -c --watch --bundleConfigAsCjs",
+    "build": "rollup -c --bundleConfigAsCjs",
+    "format": "prettier --write ."
+  },
+  "author": "Dave Thompson",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davet2001/homeassistant-energy-sankey-card"
+  },
+  "dependencies": {
+    "@material/mwc-icon-button": "^0.27.0",
+    "@material/mwc-list": "^0.27.0",
+    "@material/mwc-textfield": "^0.27.0",
+    "@mdi/js": "^7.4.47",
+    "@vaadin/combo-box": "24.5.3",
+    "@vaadin/vaadin-themable-mixin": "24.5.3",
+    "color-name": "^2.0.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "home-assistant-js-websocket": "^9.4.0",
+    "memoize-one": "^6.0.0",
+    "sortablejs": "^1.15.6"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "eslint": "^9.6.0",
+    "prettier": "^3.3.2",
+    "rollup": "^4.18.0",
+    "rollup-plugin-serve": "^2.0.3",
+    "tslib": "^2.8.0",
+    "typescript": "^5.5.3"
+  },
+  "overrides": {
+    "@lit/reactive-element": "1.6.3"
+  },
+  "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
+  "resolutions": {
+    "@polymer/polymer": "patch:@polymer/polymer@3.5.2#./.yarn/patches/@polymer/polymer/pr-5569.patch",
+    "@material/mwc-button@^0.25.3": "^0.27.0",
+    "lit": "2.8.0",
+    "lit-html": "2.8.0",
+    "@fullcalendar/daygrid": "6.1.15",
+    "globals": "15.12.0"
+  }
+}
