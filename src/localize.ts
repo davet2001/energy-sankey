@@ -4,7 +4,7 @@ import { HomeAssistant } from "./ha/types";
 // import * as ca from "./translations/ca.json";
 import * as cs from "./translations/cs.json";
 // import * as da from "./translations/da.json";
-// import * as de from "./translations/de.json";
+import * as de from "./translations/de.json";
 // import * as el from "./translations/el.json";
 import * as en from "./translations/en.json";
 // import * as es from "./translations/es.json";
@@ -37,7 +37,7 @@ export const languages: Record<string, unknown> = {
   //   ca,
   cs,
   //   da,
-  //   de,
+  de,
   //   el,
   en,
   //   es,
