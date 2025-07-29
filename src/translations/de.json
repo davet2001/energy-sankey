@@ -1,0 +1,39 @@
+{
+  "card": {
+    "generic": {
+      "other": "Andere",
+      "untracked": "nicht überwacht"
+    },
+    "power_sankey": {
+      "live_power_flow": "Live power flow"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Heutige Energie Verteilung"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Titel",
+        "max_consumer_branches": "Beschränkung der Anzahl an Verbrauchern (0 für kein Limit)",
+        "appearance": "Erscheinungsbild",
+        "advanced_options": "Erweiterte Optionen"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Netzbezug (optional)",
+        "power_to_grid_entity": "Netzeinspeisung (optional)",
+        "generation_entity": "Solarleistung (optional)",
+        "hide_small_consumers": "Gruppiere Verbraucher unter 20W",
+        "invert_battery_flows": "Batteriefluss für Laden ist positiv",
+        "battery_charge_only_from_generation": "Batterien werden nur über Solar geladen",
+        "battery_hint_std": "Batterieausgangsleitung (kombinierter ein/aus pro Batterie, positiver Wert = Entladung)",
+        "battery_hint_inverted": "Power to battery (kombinierter ein/aus pro Batterie, positiver Wert = Laden)",
+        "independent_grid_in_out": "Benutze separate Sensoren für Netzbezug/-einspeisung"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Gruppiere Verbraucher unter 0.1kWh",
+        "battery_charge_only_from_generation": "Batterien werden nur über Solar geladen"
+      }
+    }
+  }
+}
