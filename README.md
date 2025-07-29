@@ -56,7 +56,7 @@ Examples of how others have done it are in recent pull requests e.g. [#121](http
 
 In short the process is:
 
-- Open the most recent [primary language file](blob/main/src/translations/en.json) `en.json`.
+- Open the most recent [primary language file](https://github.com/davet2001/energy-sankey/blob/main/src/translations/en.json) `en.json`.
 - Copy the contents to the clipboard
 - Navigate to the `translations/` parent directory by clicking 'translations'.
 - Click 'Add file' to create a new file e.g. `de.json`
