@@ -339,10 +339,9 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
     | TemplateResult {
     // The editor only supports a single generation entity, so we need to
     // convert the single entity to an array.
-    if (config.generation_entity) {
-      config.generation_entities = [config.generation_entity];
-      delete config.generation_entity;
-    }
+    config.generation_entities = config.generation_entity
+      ? [config.generation_entity]
+      : [];
 
     let gridInRoute: ElecRoute | null = null;
     if (config.power_from_grid_entity) {
