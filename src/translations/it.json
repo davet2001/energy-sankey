@@ -1,0 +1,39 @@
+{
+  "card": {
+    "generic": {
+      "other": "Altro",
+      "untracked": "Non tracciati"
+    },
+    "power_sankey": {
+      "live_power_flow": "flusso di potenza istantaneo"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Distribuzione di energia oggi"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Titolo",
+        "max_consumer_branches": "Limita quantità di rami personalizzati (0 per illimitato)",
+        "appearance": "Apparenza",
+        "advanced_options": "Opzioni avanzate"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Potenza dalla rete(opzionale)",
+        "power_to_grid_entity": "Potenza alla rete (opzionale)",
+        "generation_entity": "Potenza da generazione (opzionale)",
+        "hide_small_consumers": "Raggruppa personalizzati sotto i 20W",
+        "invert_battery_flows": "Flussi batteria sono positivi quando in carica",
+        "battery_charge_only_from_generation": "Batterie possono essere ricaricate solo da generazione",
+        "battery_hint_std": "Potenza da batterie (combinato in/out per batteria, positivo = in scarica)",
+        "battery_hint_inverted": "Potenza a batterie (combinato in/out per batteria, positivo = in scarica)",
+        "independent_grid_in_out": "Usa sensori separati per rete (in/out)"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Raggruppa personalizzati sotto 0.1kWh",
+        "battery_charge_only_from_generation": "Batterie possono essere ricaricate solo da generazione"
+      }
+    }
+  }
+}
