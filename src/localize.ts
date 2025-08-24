@@ -13,7 +13,7 @@ import * as fr from "./translations/fr.json";
 // import * as he from "./translations/he.json";
 // import * as hu from "./translations/hu.json";
 // import * as id from "./translations/id.json";
-// import * as it from "./translations/it.json";
+import * as it from "./translations/it.json";
 // import * as ko_KR from "./translations/ko-KR.json";
 // import * as nb from "./translations/nb.json";
 // import * as nl from "./translations/nl.json";
