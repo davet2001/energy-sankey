@@ -46,7 +46,7 @@ export const languages: Record<string, unknown> = {
   //   he,
   //   hu,
   //   id,
-  //   it,
+  it,
   //   "ko-KR": ko_KR,
   //   nb,
   //   nl,
