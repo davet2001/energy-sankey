@@ -28,6 +28,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   @property() public subLabel?: string;
 
+  @property({ type: Boolean }) public nameEditable = false;
+
   private _entityKeys = new WeakMap<LovelaceRowConfig, string>();
 
   private _getKey(action: LovelaceRowConfig) {
@@ -61,50 +63,60 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         this.entities,
         (entityConf) => this._getKey(entityConf),
         (entityConf, index) => html`
-              <div class="entity">
-                <div class="handle">
-                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                </div>
-                ${entityConf.type
+        <div class="entity">
+          <div class="handle">
+            <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+          </div>
+          ${entityConf.type
             ? html`
-                      <div class="special-row">
-                        <div>
-                          <span>
-                            ${this.hass!.localize(
+              <div class="special-row">
+                <div>
+                  <span>
+                    ${this.hass!.localize(
               `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
             )}
-                          </span>
-                          <span class="secondary"
-                            >${this.hass!.localize(
+                  </span>
+                  <span class="secondary"
+                    >${this.hass!.localize(
               "ui.panel.lovelace.editor.card.entities.edit_special_row"
             )}</span
-                          >
-                        </div>
-                      </div>
-                    `
-            : html`
-                      <ha-entity-picker
-                        allow-custom-entity
-                        include-device-classes=${deviceClassesFilter}
-                        hideClearIcon
-                        label=${this.subLabel || nothing}
-                        .hass=${this.hass}
-                        .value=${(entityConf as EntityConfig).entity}
-                        .index=${index}
-                        @value-changed=${this._valueChanged}
-                      ></ha-entity-picker>
-                    `}
-                <ha-icon-button
-                  .label=${this.hass!.localize(
-              "ui.components.entity.entity-picker.clear"
-            )}
-                  .path=${mdiClose}
-                  class="remove-icon"
-                  .index=${index}
-                  @click=${this._removeRow}
-                ></ha-icon-button>
+                  >
+                </div>
               </div>
             `
+            : html`
+              <div class="entity-row">
+                <ha-entity-picker
+                  allow-custom-entity
+                  include-device-classes=${deviceClassesFilter}
+                  hideClearIcon
+                  label=${this.subLabel || nothing}
+                  .hass=${this.hass}
+                  .value=${(entityConf as EntityConfig).entity}
+                  .index=${index}
+                  @value-changed=${this._valueChanged}
+                ></ha-entity-picker>
+                ${this.nameEditable
+                  ? html`
+                    <ha-textfield
+                      .value=${(entityConf as EntityConfig).name || ""}
+                      .index=${index}
+                      @change=${this._nameChanged}
+                      label="Name (optional)"
+                    ></ha-textfield>
+                  `
+                  : nothing}
+              </div>
+            `}
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.components.entity.entity-picker.clear")}
+            .path=${mdiClose}
+            class="remove-icon"
+            .index=${index}
+            @click=${this._removeRow}
+          ></ha-icon-button>
+        </div>
+      `
       )}
         </div>
       </ha-sortable>
@@ -163,6 +175,19 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         entity: value!,
       };
     }
+
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
+  }
+
+  private _nameChanged(ev: CustomEvent): void {
+    const value = (ev.target as HTMLInputElement).value;
+    const index = (ev.target as any).index;
+    const newConfigEntities = this.entities!.concat();
+
+    newConfigEntities[index] = {
+      ...newConfigEntities[index],
+      name: value || undefined,
+    };
 
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
@@ -235,6 +260,20 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       .secondary {
         font-size: 12px;
         color: var(--secondary-text-color);
+      }
+
+      .entity-row {
+        display: flex;
+        flex-grow: 1;
+        gap: 8px;
+      }
+
+      .entity-row ha-entity-picker {
+        flex-grow: 1;
+      }
+
+      .entity-row ha-textfield {
+        flex-grow: 1;
       }
     `;
   }
