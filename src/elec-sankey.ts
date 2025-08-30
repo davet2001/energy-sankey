@@ -799,6 +799,7 @@ export class ElecSankey extends LitElement {
           }
         : undefined;
     // if we aren't tracking any consumers, use the word 'Home'
+    const untrackedName =
       consumerTrackedTotal !== 0
         ? this._localize("untracked", "Untracked")
         : this._localize("home", "Home");
