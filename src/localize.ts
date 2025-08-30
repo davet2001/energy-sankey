@@ -7,7 +7,7 @@ import * as cs from "./translations/cs.json";
 import * as de from "./translations/de.json";
 // import * as el from "./translations/el.json";
 import * as en from "./translations/en.json";
-// import * as es from "./translations/es.json";
+import * as es from "./translations/es.json";
 // import * as fi from "./translations/fi.json";
 import * as fr from "./translations/fr.json";
 // import * as he from "./translations/he.json";
@@ -40,7 +40,7 @@ export const languages: Record<string, unknown> = {
   de,
   //   el,
   en,
-  //   es,
+  es,
   //   fi,
   fr,
   //   he,
