@@ -798,9 +798,14 @@ export class ElecSankey extends LitElement {
             rate: phantomGeneration,
           }
         : undefined;
+    // if we aren't tracking any consumers, use the word 'Home'
+    const untrackedName =
+      consumerTrackedTotal != 0
+        ? this._localize("untracked", "Untracked")
+        : this._localize("home", "Home");
     this._untrackedConsumerRoute = {
       id: UNTRACKED_ID,
-      text: this._localize("untracked", "Untracked"),
+      text: untrackedName,
       rate: untrackedConsumer > 0 ? untrackedConsumer : 0,
     };
 
