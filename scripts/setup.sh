@@ -10,9 +10,9 @@
 
 sudo apt update
 sudo apt install -y npm
-sudo npm cache clean -f
+npm cache clean -f
 
 scripts/update_package_json_version.sh
-sudo npm install -g n
+npm install -g n
 
 
