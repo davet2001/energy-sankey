@@ -2,6 +2,7 @@
   "card": {
     "generic": {
       "other": "Other",
+      "home": "Home",
       "untracked": "Untracked"
     },
     "power_sankey": {

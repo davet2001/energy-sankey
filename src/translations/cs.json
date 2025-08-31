@@ -2,6 +2,7 @@
   "card": {
     "generic": {
       "other": "Ostatní",
+      "home": "Domov",
       "untracked": "Nerozlišeno"
     },
     "power_sankey": {
