@@ -23,7 +23,7 @@
         "power_from_grid_entity": "Potencia de la red (opcional)",
         "power_to_grid_entity": "Potencia a la red (opcional)",
         "generation_entity": "Potencia de generación (opcional)",
-        "hide_small_consumers": "Agrupar consumidores por debajo de 20W",
+        "hide_small_consumers": "Agrupar consumidores menores de 20W",
         "invert_battery_flows": "Los flujos de la batería son positivos al cargar",
         "battery_charge_only_from_generation": "Las baterías solo pueden cargarse con energía generada",
         "battery_hint_std": "Potencia desde la batería (una combinación de entrada/salida por batería, positivo = descarga)",
@@ -31,7 +31,7 @@
         "independent_grid_in_out": "Utilizar sensores separados para entrada/salida de la red"
       },
       "energy_sankey": {
-        "hide_small_consumers": "Agrupar consumidores por debajo de 0.1 kWh",
+        "hide_small_consumers": "Agrupar consumidores menores de 0.1 kWh",
         "battery_charge_only_from_generation": "Las baterías solo pueden cargarse con energía generada"
       }
     }
