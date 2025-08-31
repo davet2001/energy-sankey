@@ -16,11 +16,11 @@
       "generic": {
         "title": "Titolo",
         "max_consumer_branches": "Limita quantità di rami personalizzati (0 per illimitato)",
-        "appearance": "Apparenza",
+        "appearance": "Aspetto",
         "advanced_options": "Opzioni avanzate"
       },
       "power_sankey": {
-        "power_from_grid_entity": "Potenza dalla rete(opzionale)",
+        "power_from_grid_entity": "Potenza dalla rete (opzionale)",
         "power_to_grid_entity": "Potenza alla rete (opzionale)",
         "generation_entity": "Potenza da generazione (opzionale)",
         "hide_small_consumers": "Raggruppa personalizzati sotto i 20W",
