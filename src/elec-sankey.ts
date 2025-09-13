@@ -438,6 +438,9 @@ function renderPieChart(
       svg`<path d="M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} Z" fill="${colors[i]}" />`
     );
   }
+  svgParts.push(
+    svg`<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#2c2c2c" stroke-width="1" />`
+  );
 
   return svg`<svg width="${radius * 2}" height="${radius * 2}" viewBox="0 0 ${radius * 2} ${radius * 2}">
     ${svgParts}
@@ -1592,7 +1595,7 @@ export class ElecSankey extends LitElement {
             this._genColor(),
             this._gridColor()
           ],
-            10
+            15
           )
           }`
   //       < span > ${(consumer.mix.rateGrid).toFixed(1) + "kWh Grid"
@@ -2417,8 +2420,8 @@ export class ElecSankey extends LitElement {
         visibility: hidden;
         opacity: 0;
         border-radius: 4px;
-        middle: 0px; /* Position above the element */
-        left: -25px;
+        bottom: 5px;
+        left: -30px;
         font-size: 8px;
         background: transparent;
         transition:
