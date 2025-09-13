@@ -6,11 +6,16 @@ import { classMap } from "lit/directives/class-map.js";
 
 //import "../../../../components/chart/ha-chart-base";
 //import "../../../../components/ha-card";
-import type { ElecRoute, ElecRoutePair } from "../../elec-sankey";
+import type {
+  ElecConsumerRoute,
+  ElecRoute,
+  ElecRoutePair,
+} from "../../elec-sankey";
 import {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference, /// done
   EnergyData,
+  EnergySourceByType,
   energySourcesByType,
   getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
@@ -63,6 +68,12 @@ export function verifyAndMigrateConfig(config: EnergyElecFlowCardConfig) {
   return newConfig;
 }
 
+export interface EnergyAllocation {
+  fromGen: number;
+  fromBatt: number;
+  fromGrid: number;
+}
+
 registerCustomCard({
   type: ENERGY_CARD_NAME,
   name: "Sankey Energy Flow Card",
@@ -83,7 +94,7 @@ export class EnergyElecFlowCard
 
   @state() private _generationInRoutes: { [id: string]: ElecRoute } = {};
 
-  @state() private _consumerRoutes: { [id: string]: ElecRoute } = {};
+  @state() private _consumerRoutes: { [id: string]: ElecConsumerRoute } = {};
 
   @state() private _batteryRoutes: { [id: string]: ElecRoutePair } = {};
 
@@ -158,14 +169,129 @@ export class EnergyElecFlowCard
     `;
   }
 
+  private _getSourceEnergyAllocations(
+    energyData: EnergyData,
+    types: EnergySourceByType
+  ): EnergyAllocation[] {
+    let sourceEnergyAllocations: EnergyAllocation[] = [];
+
+    const hasGrid =
+      types.grid &&
+      types.grid.length > 0 &&
+      types.grid[0].flow_from &&
+      types.grid[0].flow_from.length > 0
+        ? 1
+        : 0;
+    const hasSolar = types.solar ? 1 : 0;
+    const hasBattery = types.battery ? 1 : 0;
+    const numSources = hasGrid + hasSolar + hasBattery;
+
+    if (numSources < 2) {
+      console.log(
+        "Only",
+        numSources,
+        "energy sources defined. Skipping allocation analysis."
+      );
+      return [];
+    }
+    let count: number;
+    if (hasGrid) {
+      count =
+        energyData.stats[types.grid![0].flow_from[0].stat_energy_from].length;
+    } else if (hasSolar) {
+      count = energyData.stats[types.solar![0].stat_energy_from].length;
+    } else if (hasBattery) {
+      count = energyData.stats[types.battery![0].stat_energy_from].length;
+    } else {
+      console.log(
+        "Error preparing energy allocation analysis. Cannot get count."
+      );
+      return [];
+    }
+
+    for (let i = 0; i < count; i++) {
+      let genEnergy = 0;
+      let battEnergy = 0;
+      let gridEnergy = 0;
+      for (const source of energyData.prefs.energy_sources) {
+        if (source.type === "solar") {
+          const ref = source.stat_energy_from;
+          genEnergy += energyData.stats[ref][i].change || 0;
+          // @todo need to add other generation sources here (wind, etc.)
+        } else if (source.type === "battery") {
+          battEnergy +=
+            energyData.stats[source.stat_energy_from][i].change || 0;
+        } else if (source.type === "grid") {
+          for (const grid_source of source.flow_from) {
+            gridEnergy +=
+              energyData.stats[grid_source.stat_energy_from][i].change || 0;
+          }
+        }
+      }
+      sourceEnergyAllocations.push({
+        fromBatt: battEnergy,
+        fromGen: genEnergy,
+        fromGrid: gridEnergy,
+      });
+    }
+
+    return sourceEnergyAllocations;
+  }
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    const types = energySourcesByType(energyData.prefs);
+    const sourceEnergyAllocations = this._getSourceEnergyAllocations(
+      energyData,
+      types
+    );
+
+    let consumerEnergyAllocations: { [id: string]: EnergyAllocation[] } = {};
+
+    const consumerList: string[] = [];
+
+    const consumers: DeviceConsumptionEnergyPreference[] = energyData.prefs
+      .device_consumption as DeviceConsumptionEnergyPreference[];
+
+    // @todo this is duplicated code, could possibly be moved to optimise.
+    // Filter out consumers that are higher level measurements in the hierarchy
+    let consumerBlacklist: string[] = [];
+    for (const consumer of consumers) {
+      if (consumer.included_in_stat !== undefined) {
+        consumerBlacklist.push(consumer.included_in_stat);
+      }
+    }
+    for (const consumer of consumers) {
+      if (consumerBlacklist.includes(consumer.stat_consumption)) {
+        continue;
+      }
+      consumerList.push(consumer.stat_consumption);
+      consumerEnergyAllocations[consumer.stat_consumption] = [];
+    }
+    // end of duplicated code
+
+    for (let i = 0; i < sourceEnergyAllocations.length; i++) {
+      const alloc = sourceEnergyAllocations[i];
+      const total = alloc.fromBatt + alloc.fromGen + alloc.fromGrid;
+      const ratioGen = total > 0 ? alloc.fromGen / total : 0;
+      const ratioBatt = total > 0 ? alloc.fromBatt / total : 0;
+      const ratioGrid = total > 0 ? alloc.fromGrid / total : 0;
+
+      for (const consumer of consumerList) {
+        if (energyData.stats[consumer].length <= i) {
+          break;
+        }
+        const consumerEnergyChunk = energyData.stats[consumer][i].change || 0;
+        consumerEnergyAllocations[consumer].push({
+          fromGen: ratioGen * consumerEnergyChunk,
+          fromBatt: ratioBatt * consumerEnergyChunk,
+          fromGrid: ratioGrid * consumerEnergyChunk,
+        });
+      }
+    }
+
     const solarSources: SolarSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
-
-    const prefs = energyData.prefs;
-    const types = energySourcesByType(prefs);
 
     if (types.grid && types.grid.length > 0) {
       if (types.grid[0].flow_from.length > 0) {
@@ -216,20 +342,9 @@ export class EnergyElecFlowCard
       }
     });
 
-    const consumers: DeviceConsumptionEnergyPreference[] = energyData.prefs
-      .device_consumption as DeviceConsumptionEnergyPreference[];
-
-    // Filter out consumers that are higher level measurements in the hierarchy
-    let consumerBlacklist: string[] = [];
-    consumers.forEach((consumer: DeviceConsumptionEnergyPreference) => {
-      if (consumer.included_in_stat !== undefined) {
-        consumerBlacklist.push(consumer.included_in_stat);
-      }
-    });
-
-    consumers.forEach((consumer: DeviceConsumptionEnergyPreference) => {
+    for (const consumer of consumers) {
       if (consumerBlacklist.includes(consumer.stat_consumption)) {
-        return;
+        continue;
       }
       const label =
         consumer.name ||
@@ -238,16 +353,34 @@ export class EnergyElecFlowCard
         consumer.stat_consumption,
       ]);
       if (!(consumer.stat_consumption in this._consumerRoutes)) {
+        const stat = consumerEnergyAllocations[consumer.stat_consumption];
+        const mix = consumerEnergyAllocations[consumer.stat_consumption]
+          ? {
+              rateGrid: stat.reduce(
+                (acc, curr) => acc + (curr.fromGrid > 0 ? curr.fromGrid : 0),
+                0
+              ),
+              rateGeneration: stat.reduce(
+                (acc, curr) => acc + (curr.fromGen > 0 ? curr.fromGen : 0),
+                0
+              ),
+              rateBattery: stat.reduce(
+                (acc, curr) => acc + (curr.fromBatt > 0 ? curr.fromBatt : 0),
+                0
+              ),
+            }
+          : undefined;
         this._consumerRoutes[consumer.stat_consumption] = {
           id: consumer.stat_consumption,
           text: label,
           rate: value ?? 0,
           icon: undefined,
+          mix: mix,
         };
       } else {
         this._consumerRoutes[consumer.stat_consumption].rate = value ?? 0;
       }
-    });
+    }
 
     const batteries: BatterySourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(

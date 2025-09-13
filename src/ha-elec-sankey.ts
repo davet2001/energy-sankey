@@ -94,8 +94,7 @@ export class HaElecSankey extends ElecSankey {
             </span>`
         : html`<br />${formatNumber(valueA, this.hass.locale, {
               maximumFractionDigits: numFractionDigits,
-            })}&nbsp;${this.unit}`}
-    </div>`;
+            })}&nbsp;${this.unit}`}</div>`;
   }
 
   private _handleMoreInfo(e: MouseEvent) {

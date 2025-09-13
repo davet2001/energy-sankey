@@ -153,6 +153,16 @@ export function mix3Hexes(
   const b = Math.round(b1 * ratio1 + b2 * ratio2 + b3 * ratio3);
   return rgb2hex(r, g, b);
 }
+/**
+ * Clips a value to be within a certain range.
+ * @param value The value to clip.
+ * @param min The minimum value.
+ * @param max The maximum value.
+ * @returns The clipped value.
+ */
+function clip(value: number, min: number, max: number): number {
+  return value > max ? max : value < min ? min : value;
+}
 
 /**
  * Calculates the intersection point of two lines defined by their endpoints.
@@ -388,6 +398,50 @@ function renderBlendRect(
     />
   `;
   return svgRet;
+}
+
+/**
+ * Renders a pie chart SVG.
+ * @param values - The values for each slice of the pie.
+ * @param colors - The colors for each slice of the pie.
+ * @param radius - The radius of the pie chart.
+ * @returns The SVG string for the pie chart.
+ */
+function renderPieChart(
+  values: number[],
+  colors: string[],
+  radius: number = 50
+): TemplateResult | symbol {
+  const total = values.reduce((a, b) => a + b, 0);
+  let cumulative = 0;
+  const cx = radius;
+  const cy = radius;
+  const svgParts: TemplateResult[] = [];
+
+  for (const [i, value] of values.entries()) {
+    if (value < 0) {
+      console.warn("Warning: Aborting pie chart for negative value:", value);
+      return nothing;
+    }
+    const startAngle = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+    cumulative += value;
+    const endAngle = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+
+    const largeArcFlag = endAngle - startAngle > Math.PI ? 1 : 0;
+
+    svgParts.push(
+      svg`<path d="M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} Z" fill="${colors[i]}" />`
+    );
+  }
+
+  return svg`<svg width="${radius * 2}" height="${radius * 2}" viewBox="0 0 ${radius * 2} ${radius * 2}">
+    ${svgParts}
+  </svg>`;
 }
 /**
  * Sorts ElecRoute objects by their rate in ascending or descending order.
@@ -1470,13 +1524,20 @@ export class ElecSankey extends LitElement {
     const yEnd = topRightY + width / 2;
     let colorEnd: string | null = null;
     if (consumer.mix && consumer.rate > 0.01) {
+      if (consumer.mix.rateBattery < 0) {
+        console.warn(
+          "Suppressing negative battery energy value:",
+          consumer.mix.rateBattery
+        );
+        consumer.mix.rateBattery = 0;
+      }
       colorEnd = mix3Hexes(
         this._gridColor(),
         this._genColor(),
         this._battColor(),
-        consumer.mix.rateGrid / consumer.rate,
-        consumer.mix.rateGeneration / consumer.rate,
-        consumer.mix.rateBattery / consumer.rate
+        clip(consumer.mix.rateGrid / consumer.rate, 0, 1),
+        clip(consumer.mix.rateGeneration / consumer.rate, 0, 1),
+        clip(consumer.mix.rateBattery / consumer.rate, 0, 1)
       );
     }
     const svgFlow = renderFlowByCorners(
@@ -1508,14 +1569,38 @@ export class ElecSankey extends LitElement {
       ? undefined
       : consumer.id;
     const divHeight = CONSUMER_LABEL_HEIGHT;
+
+    // prettier-ignore
     const divRet = html`<div
       class="label elecroute-label-consumer"
       style="height:${divHeight}px;
       top: ${yEnd * svgScaleX -
       (count * divHeight) / 2}px; margin: ${-divHeight / 2}px 0 0 0;"
     >
-      ${this._generateLabelDiv(id, undefined, consumer.text, consumer.rate)}
-    </div>`;
+      <span class="label-text"
+        >${this._generateLabelDiv(id, undefined, consumer.text, consumer.rate)}</span
+        >${
+          consumer.mix
+          ? html`<div class="hover-info"
+              >${
+          renderPieChart([
+            consumer.mix.rateBattery,
+            consumer.mix.rateGeneration,
+            consumer.mix.rateGrid
+          ], [
+            this._battColor(),
+            this._genColor(),
+            this._gridColor()
+          ],
+            10
+          )
+          }`
+  //       < span > ${(consumer.mix.rateGrid).toFixed(1) + "kWh Grid"
+  // }<br /></span
+  //           ><span>${(consumer.mix.rateBattery).toFixed(1) + "kWh Generation"}<br /></span
+  //           ><span>${(consumer.mix.rateBattery).toFixed(1) + "kWh Battery"}</span
+  //           ></div>`
+        : nothing}</div>`;
 
     const svgArrow = svg`
       <polygon points="${extrasLength},${yEnd - width / 2}
@@ -2319,8 +2404,31 @@ export class ElecSankey extends LitElement {
         justify-content: left;
         padding-left: 6px;
         white-space: pre;
+      }
+      .label-text {
         overflow: hidden;
         text-overflow: ellipsis;
+        align-items: center;
+        max-height: 100%;
+      }
+
+      .hover-info {
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        border-radius: 4px;
+        middle: 0px; /* Position above the element */
+        left: -25px;
+        font-size: 8px;
+        background: transparent;
+        transition:
+          visibility 0s,
+          opacity 0.2s ease-in-out;
+      }
+
+      .elecroute-label-consumer:hover .hover-info {
+        visibility: visible;
+        opacity: 1;
       }
       svg {
         rect {

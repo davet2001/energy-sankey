@@ -252,7 +252,7 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
-interface EnergySourceByType {
+export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
@@ -400,7 +400,13 @@ const getEnergyData = async (
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
-    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+    dayDifference > 90
+      ? "month"
+      : dayDifference > 7
+        ? "day"
+        : dayDifference > 2
+          ? "hour"
+          : "5minute";
 
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
