@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "Øvrige",
+      "home": "Hjem",
+      "untracked": "Usporede"
+    },
+    "power_sankey": {
+      "live_power_flow": "Aktiv energi"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Dagens energi distribution"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Titel",
+        "max_consumer_branches": "Begrænset antal af forbrugssteder (0 for uubegrænset)",
+        "appearance": "Udseende",
+        "advanced_options": "Avancerede Optioner"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Energi fra nettet (optional)",
+        "power_to_grid_entity": "Energi til nettet (optional)",
+        "generation_entity": "Energi fra produktion (optional)",
+        "hide_small_consumers": "Gruper under 20W",
+        "invert_battery_flows": "Batteri flow er positiv ved opladning",
+        "battery_charge_only_from_generation": "Batterier kan kun oplade fra produceret energi",
+        "battery_hint_std": "Energi fra batteri (En samlet for ind/ud per batteri, positiv = afladning)",
+        "battery_hint_inverted": "Energi til batteri (En samlet for ind/ud per batteri, positiv = opladning)",
+        "independent_grid_in_out": "Brug seperate sensorer til ind/ud på nettet"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Saml forbrug under 0.1kWh",
+        "battery_charge_only_from_generation": "Batterier kan kun oplades fra genereret energi"
+      }
+    }
+  }
+}
