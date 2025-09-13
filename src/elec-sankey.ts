@@ -1597,12 +1597,7 @@ export class ElecSankey extends LitElement {
           ],
             15
           )
-          }`
-  //       < span > ${(consumer.mix.rateGrid).toFixed(1) + "kWh Grid"
-  // }<br /></span
-  //           ><span>${(consumer.mix.rateBattery).toFixed(1) + "kWh Generation"}<br /></span
-  //           ><span>${(consumer.mix.rateBattery).toFixed(1) + "kWh Battery"}</span
-  //           ></div>`
+        }`
         : nothing}</div>`;
 
     const svgArrow = svg`
