@@ -216,15 +216,15 @@ export class EnergyElecFlowCard
       for (const source of energyData.prefs.energy_sources) {
         if (source.type === "solar") {
           const ref = source.stat_energy_from;
-          genEnergy += energyData.stats[ref][i].change || 0;
+          genEnergy += energyData.stats[ref][i]?.change || 0;
           // @todo need to add other generation sources here (wind, etc.)
         } else if (source.type === "battery") {
           battEnergy +=
-            energyData.stats[source.stat_energy_from][i].change || 0;
+            energyData.stats[source.stat_energy_from][i]?.change || 0;
         } else if (source.type === "grid") {
           for (const grid_source of source.flow_from) {
             gridEnergy +=
-              energyData.stats[grid_source.stat_energy_from][i].change || 0;
+              energyData.stats[grid_source.stat_energy_from][i]?.change || 0;
           }
         }
       }
@@ -276,8 +276,16 @@ export class EnergyElecFlowCard
       const ratioGrid = total > 0 ? alloc.fromGrid / total : 0;
 
       for (const consumer of consumerList) {
+        if (!energyData.stats[consumer]) {
+          console.warn(
+            "No statistics found for consumer",
+            consumer,
+            ". Skipping allocation."
+          );
+          continue;
+        }
         if (energyData.stats[consumer].length <= i) {
-          break;
+          continue;
         }
         const consumerEnergyChunk = energyData.stats[consumer][i].change || 0;
         consumerEnergyAllocations[consumer].push({
