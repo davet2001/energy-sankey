@@ -70,6 +70,8 @@ const SVG_LHS_VISIBLE_WIDTH = 110;
 
 export const PAD_ANTIALIAS = 0.5;
 
+const ZERO_CHECK_TOLERANCE = 0.1;
+
 const UNTRACKED_ID = "untracked";
 const OTHER_ID = "other";
 
@@ -723,7 +725,7 @@ export class ElecSankey extends LitElement {
 
     // Do we have an excess of consumption?
     x = consumerTrackedTotal - consumerTotalA;
-    if (x > 0.1) {
+    if (x > ZERO_CHECK_TOLERANCE) {
       // There is an unknown energy source.
       if (this.gridInRoute === undefined && this.gridOutRoute === undefined) {
         // If we aren't tracking grid sources, create a phantom one.
@@ -744,7 +746,7 @@ export class ElecSankey extends LitElement {
       generationToBatteriesTemp +
       generationToConsumersTemp -
       generationTrackedTotal;
-    if (x > 0.1) {
+    if (x > ZERO_CHECK_TOLERANCE) {
       phantomGeneration = x;
       // generationToConsumersTemp =
       //   generationTrackedTotal +
