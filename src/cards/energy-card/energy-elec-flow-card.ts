@@ -354,7 +354,7 @@ export class EnergyElecFlowCard
       ]);
       if (!(consumer.stat_consumption in this._consumerRoutes)) {
         const stat = consumerEnergyAllocations[consumer.stat_consumption];
-        const mix = consumerEnergyAllocations[consumer.stat_consumption]
+        let mix = consumerEnergyAllocations[consumer.stat_consumption]
           ? {
               rateGrid: stat.reduce(
                 (acc, curr) => acc + (curr.fromGrid > 0 ? curr.fromGrid : 0),
@@ -370,6 +370,20 @@ export class EnergyElecFlowCard
               ),
             }
           : undefined;
+        if (
+          mix &&
+          mix.rateBattery < 0.1 &&
+          mix.rateGeneration < 0.1 &&
+          mix.rateGrid < 0.1
+        ) {
+          console.warn(
+            "Suppressing insignificant mix data for",
+            consumer.stat_consumption,
+            ":",
+            mix
+          );
+          mix = undefined;
+        }
         this._consumerRoutes[consumer.stat_consumption] = {
           id: consumer.stat_consumption,
           text: label,
