@@ -530,12 +530,12 @@ export class ElecSankey extends LitElement {
     return this._generationTrackedTotal() + this._generationPhantom();
   }
 
-  private _gridImport(): number {
+  private _gridImport(excludePhantom: boolean = false): number {
     if (this.gridInRoute) {
       return this.gridInRoute.rate > 0 ? this.gridInRoute.rate : 0;
     } else if (this.gridOutRoute) {
       return this.gridOutRoute.rate < 0 ? -this.gridOutRoute.rate : 0;
-    } else if (this._phantomGridInRoute) {
+    } else if (!excludePhantom && this._phantomGridInRoute) {
       return this._phantomGridInRoute.rate;
     }
     return 0;
@@ -602,7 +602,7 @@ export class ElecSankey extends LitElement {
      * each flow only possible to be in or out (not both), but they are both
      * calculated using the same algorithm, documented inline below.
      */
-    const gridImport = this._gridImport();
+    const gridImport = this._gridImport(true);
 
     // Determine the grid import and export
     if (this.gridOutRoute) {
@@ -633,7 +633,7 @@ export class ElecSankey extends LitElement {
     let x = this._gridExport - generationTrackedTotal - batteryInTotal;
     if (x > 0) {
       // If this is the case, we create a phantom generation source
-      // of sufficient value to balance thie equation, and assume that all
+      // of sufficient value to balance the equation, and assume that all
       // battery power is going to the grid.
       phantomGeneration = x;
       batteriesToGridTemp = batteryInTotal;
@@ -723,7 +723,7 @@ export class ElecSankey extends LitElement {
 
     // Do we have an excess of consumption?
     x = consumerTrackedTotal - consumerTotalA;
-    if (x > 0) {
+    if (x > 0.1) {
       // There is an unknown energy source.
       if (this.gridInRoute === undefined && this.gridOutRoute === undefined) {
         // If we aren't tracking grid sources, create a phantom one.
@@ -744,7 +744,7 @@ export class ElecSankey extends LitElement {
       generationToBatteriesTemp +
       generationToConsumersTemp -
       generationTrackedTotal;
-    if (x > 0) {
+    if (x > 0.1) {
       phantomGeneration = x;
       // generationToConsumersTemp =
       //   generationTrackedTotal +
