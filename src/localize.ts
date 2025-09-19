@@ -51,7 +51,7 @@ export const languages: Record<string, unknown> = {
   //   nb,
   //   nl,
   //   pl,
-  //   "pt-BR": pt_BR,
+  "pt-BR": pt_BR,
   //   "pt-PT": pt_PT,
   //   ro,
   //   ru,
