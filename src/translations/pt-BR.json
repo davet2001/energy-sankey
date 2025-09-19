@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "Outro",
+      "home": "Início",
+      "untracked": "Não rastreado"
+    },
+    "power_sankey": {
+      "live_power_flow": "Fluxo de energia em tempo real"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Distribuição de energia hoje"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Título",
+        "max_consumer_branches": "Limite da quantidade de ramificações de consumidores (0 para ilimitado)",
+        "appearance": "Aparência",
+        "advanced_options": "Opções avançadas"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Potência da rede (opcional)",
+        "power_to_grid_entity": "Potência para a rede (opcional)",
+        "generation_entity": "Potência da geração (opcional)",
+        "hide_small_consumers": "Grupo de consumidores abaixo de 20W",
+        "invert_battery_flows": "Os fluxos da bateria são positivos ao carregar",
+        "battery_charge_only_from_generation": "As baterias só podem ser carregadas com energia gerada",
+        "battery_hint_std": "Potência da bateria (uma entrada/saída combinada por bateria, positivo = descarregando)",
+        "battery_hint_inverted": "Potência para bateria (uma entrada/saída combinada por bateria, positivo = carregando)",
+        "independent_grid_in_out": "Usar sensores separados para entrada/saída da rede"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Agrupar consumidores abaixo de 0.1kWh",
+        "battery_charge_only_from_generation": "As baterias só podem ser carregadas com energia gerada"
+      }
+    }
+  }
+}
