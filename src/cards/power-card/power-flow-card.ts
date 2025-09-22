@@ -90,6 +90,21 @@ export function verifyAndMigrateConfig(config: PowerFlowCardConfig) {
   }
   newConfig.config_version = currentVersion;
 
+  // Add name field to entities if missing
+  newConfig.consumer_entities = newConfig.consumer_entities.map((e) => {
+    if (typeof e === "string") {
+      return { entity: e };
+    }
+    return e;
+  });
+
+  newConfig.battery_entities = newConfig.battery_entities.map((e) => {
+    if (typeof e === "string") {
+      return { entity: e };
+    }
+    return e;
+  });
+
   return newConfig;
 }
 
@@ -326,6 +341,28 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
     return returnConfig;
   }
 
+  _getConsumerName(consumer: ConsumerEntity): string {
+    if (consumer.name) {
+      return consumer.name;
+    }
+    const stateObj = this.hass.states[consumer.entity];
+    if (!stateObj) {
+      return consumer.entity;
+    }
+    return computeStateName(stateObj);
+  }
+
+  _getBatteryName(battery: BatteryEntity): string {
+    if (battery.name) {
+      return battery.name;
+    }
+    const stateObj = this.hass.states[battery.entity];
+    if (!stateObj) {
+      return battery.entity;
+    }
+    return computeStateName(stateObj);
+  }
+
   protected _getValues(
     config: PowerFlowCardConfig
   ):
@@ -408,7 +445,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
         }
         consumerRoutes[entity.entity] = {
           id: entity.entity,
-          text: name,
+          text: this._getConsumerName(entity),
           rate: computePower(stateObj),
         };
       }
@@ -432,7 +469,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
         batteryRoutes[entity.entity] = {
           in: {
             id: entity.entity,
-            text: name,
+            text: this._getBatteryName(entity),
             rate: powerIn > 0 ? powerIn : 0,
           },
           out: {
