@@ -931,7 +931,8 @@ export class ElecSankey extends LitElement {
     valueB: number | undefined = undefined,
     _valueAColor: string | undefined = undefined,
     _valueBColor: string | undefined = undefined,
-    _displayClass: string | undefined = undefined
+    _displayClass: string | undefined = undefined,
+    _: boolean = true
   ): TemplateResult {
     const valueARounded = Math.round(valueA * 10) / 10;
     const valueBRounded = valueB ? Math.round(valueB * 10) / 10 : undefined;
@@ -1165,6 +1166,9 @@ export class ElecSankey extends LitElement {
 
     const midY = (y10 + y13) / 2;
     const divHeight = ICON_SIZE_PX + TEXT_PADDING + FONT_SIZE_PX * 2;
+    const hasGridExport =
+      Object.keys(this.batteryRoutes).length > 0 ||
+      Object.keys(this.generationInRoutes).length > 0;
     const divRet = html`<div
       width=${ICON_SIZE_PX * 2}
       class="label elecroute-label-grid"
@@ -1179,7 +1183,8 @@ export class ElecSankey extends LitElement {
         rateB,
         undefined,
         undefined,
-        "grid"
+        "grid",
+        hasGridExport
       )}
     </div>`;
 

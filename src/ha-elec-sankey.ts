@@ -58,7 +58,8 @@ export class HaElecSankey extends ElecSankey {
     valueB: number | undefined,
     valueAColor: string | undefined = undefined,
     valueBColor: string | undefined = undefined,
-    displayClass: string | undefined = undefined
+    displayClass: string | undefined = undefined,
+    showLeftValue: boolean = true
   ): TemplateResult {
     const _id = id || "";
     const numFractionDigits = this.unit === "kWh" ? 1 : 0;
@@ -70,7 +71,7 @@ export class HaElecSankey extends ElecSankey {
     >${_name || nothing}${icon
         ? html`<ha-svg-icon id=${_id} .path=${icon}> </ha-svg-icon>`
         : nothing}${valueB !== undefined
-        ? html`<br /><span
+        ? html`<br />${showLeftValue ? html`<span
               class="directionleft ${displayClass}"
               style=${valueBColor ? `color:${valueBColor}` : nothing}
               id=${_id}
@@ -80,7 +81,7 @@ export class HaElecSankey extends ElecSankey {
               >${formatNumber(valueB, this.hass.locale, {
                 maximumFractionDigits: numFractionDigits,
               })}&nbsp;${this.unit}</span
-            ><br />
+            >`: nothing}<br />
             <span
               class="directionright ${displayClass}"
               style=${valueAColor ? `color:${valueAColor}` : nothing}
