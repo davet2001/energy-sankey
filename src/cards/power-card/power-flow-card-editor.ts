@@ -25,6 +25,7 @@ import "../../ha/panels/lovelace/editor/hui-entities-card-row-editor";
 import { mdiPalette, mdiWrench } from "@mdi/js";
 import { setupCustomlocalize } from "../../localize";
 import { verifyAndMigrateConfig } from "./power-flow-card";
+import { ConsumerEntity, BatteryEntity } from "../../types";
 
 const POWER_LABELS = [
   "power_from_grid_entity",
@@ -194,6 +195,7 @@ export class PowerFlowCardEditor
         .entities=${this._configBatteryEntities}
         includeDeviceClasses=${["power"]}
         @entities-changed=${this._valueChanged}
+        nameEditable
       ></elec-sankey-hui-entities-card-row-editor>
       <elec-sankey-hui-entities-card-row-editor
         .hass=${this.hass}
@@ -203,6 +205,7 @@ export class PowerFlowCardEditor
         includeDeviceClasses=${["power"]}
         @entities-changed=${this._valueChanged}
         @edit-detail-element=${this._editDetailElement}
+        nameEditable
       ></elec-sankey-hui-entities-card-row-editor>
       <ha-alert alert-type="info">
         Please note that this card is in development! If you see a bug or a
@@ -381,5 +384,41 @@ export class PowerFlowCardEditor
 
   private _goBack(): void {
     this._subElementEditorConfig = undefined;
+  }
+
+  // Add a method to handle name changes
+  private _handleNameChange(ev: CustomEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const target = ev.target as HTMLElement;
+    const index = Number(target.getAttribute("data-index"));
+    const type = target.getAttribute("data-type");
+    const newName = (ev.target as HTMLInputElement).value;
+
+    if (type === "consumer") {
+      const newConsumerEntities = [...this._config.consumer_entities];
+      newConsumerEntities[index] = {
+        ...newConsumerEntities[index],
+        name: newName || undefined,
+      };
+      this._config = {
+        ...this._config,
+        consumer_entities: newConsumerEntities,
+      };
+    } else if (type === "battery") {
+      const newBatteryEntities = [...this._config.battery_entities];
+      newBatteryEntities[index] = {
+        ...newBatteryEntities[index],
+        name: newName || undefined,
+      };
+      this._config = {
+        ...this._config,
+        battery_entities: newBatteryEntities,
+      };
+    }
+
+    fireEvent(this, "config-changed", { config: this._config });
   }
 }
