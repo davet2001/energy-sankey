@@ -87,6 +87,14 @@ export interface ElecRoutePair {
   out: ElecRoute;
 }
 
+export interface ElecConsumerRoute extends ElecRoute {
+  mix?: {
+    rateGrid: number; // Amount of flow from the grid.
+    rateGeneration: number; // Amount of flow from generation.
+    rateBattery: number; // Amount of flow from batteries.
+  };
+}
+
 function debugPoint(x: number, y: number, label: string): TemplateResult {
   return svg`
     <circle cx="${x}" cy="${y}" r="3" fill="#22DDDD" />
@@ -145,6 +153,16 @@ export function mix3Hexes(
   const b = Math.round(b1 * ratio1 + b2 * ratio2 + b3 * ratio3);
   return rgb2hex(r, g, b);
 }
+/**
+ * Clips a value to be within a certain range.
+ * @param value The value to clip.
+ * @param min The minimum value.
+ * @param max The maximum value.
+ * @returns The clipped value.
+ */
+function clip(value: number, min: number, max: number): number {
+  return value > max ? max : value < min ? min : value;
+}
 
 /**
  * Calculates the intersection point of two lines defined by their endpoints.
@@ -179,8 +197,8 @@ function line_intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
  * bezier shape to join them. This is useful for creating a flow map where
  * there are significant changes in direction but we don't want curves to
  * overlap.
- * An extreme fan-out a spread out list could result in significant overlap
- * if this were to be constructed with curves of constant width.
+ * An extreme fan-out with a spread out list could result in significant
+ * overlap if this were to be constructed with curves of constant width.
  */
 function renderFlowByCorners(
   startLX: number,
@@ -192,7 +210,8 @@ function renderFlowByCorners(
   endRX: number,
   endRY: number,
   classname: string = "",
-  color: string | null = null
+  colorStart: string | null = null,
+  colorEnd: string | null = null
 ): TemplateResult {
   // Don't attempt to draw curves for very narrow lines
   if (
@@ -261,8 +280,27 @@ function renderFlowByCorners(
   const [bezierEndLX, bezierEndLY, ,] = ret2;
   const [bezierEndRX, bezierEndRY, ,] = ret3;
   const [bezierStartRX, bezierStartRY, ,] = ret4;
-  const fillspec = color ? "fill:" + color : "";
+  let fillspec;
+  if (colorStart && colorEnd) {
+    fillspec = `fill:url('#grad_${colorStart}_${colorEnd}')`;
+  } else if (colorStart && !colorEnd) {
+    fillspec = `fill:${colorStart}`;
+  } else {
+    fillspec = "";
+  }
   const svg_ret = svg`
+    ${
+      colorStart && colorEnd
+        ? svg`
+  <defs>
+    <linearGradient id="grad_${colorStart}_${colorEnd}">
+      <stop offset="0%" style="stop-color:${colorStart};stop-opacity:1" />
+      <stop offset="100%" style="stop-color:${colorEnd};stop-opacity:1" />
+    </linearGradient>
+  </defs>
+      `
+        : nothing
+    }
   <path
       class="flow ${classname}"
       d="M ${startLX},${startLY}
@@ -291,7 +329,7 @@ export function renderRect(
   y="${y}"
   height="${height}"
   width="${width}"
-  style=${styleString}
+  style="${styleString}"
   />`;
 }
 
@@ -360,6 +398,53 @@ function renderBlendRect(
     />
   `;
   return svgRet;
+}
+
+/**
+ * Renders a pie chart SVG.
+ * @param values - The values for each slice of the pie.
+ * @param colors - The colors for each slice of the pie.
+ * @param radius - The radius of the pie chart.
+ * @returns The SVG string for the pie chart.
+ */
+function renderPieChart(
+  values: number[],
+  colors: string[],
+  radius: number = 50
+): TemplateResult | symbol {
+  const total = values.reduce((a, b) => a + b, 0);
+  let cumulative = 0;
+  const cx = radius;
+  const cy = radius;
+  const svgParts: TemplateResult[] = [];
+
+  for (const [i, value] of values.entries()) {
+    if (value < 0) {
+      console.warn("Warning: Aborting pie chart for negative value:", value);
+      return nothing;
+    }
+    const startAngle = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+    cumulative += value;
+    const endAngle = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+
+    const largeArcFlag = endAngle - startAngle > Math.PI ? 1 : 0;
+
+    svgParts.push(
+      svg`<path d="M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} Z" fill="${colors[i]}" />`
+    );
+  }
+  svgParts.push(
+    svg`<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#2c2c2c" stroke-width="1" />`
+  );
+
+  return svg`<svg width="${radius * 2}" height="${radius * 2}" viewBox="0 0 ${radius * 2} ${radius * 2}">
+    ${svgParts}
+  </svg>`;
 }
 /**
  * Sorts ElecRoute objects by their rate in ascending or descending order.
@@ -465,7 +550,7 @@ export class ElecSankey extends LitElement {
   public gridOutRoute?: ElecRoute;
 
   @property({ attribute: false })
-  public consumerRoutes: { [id: string]: ElecRoute } = {};
+  public consumerRoutes: { [id: string]: ElecConsumerRoute } = {};
 
   @property({ attribute: false })
   public batteryRoutes: { [id: string]: ElecRoutePair } = {};
@@ -1430,9 +1515,9 @@ export class ElecSankey extends LitElement {
     topLeftY: number,
     topRightX: number,
     topRightY: number,
-    consumer: ElecRoute,
-    color: string,
-    svgScaleX: number,
+    consumer: ElecConsumerRoute,
+    colorStart: string,
+    svgScaleX: number = 1,
     count: number = 1
   ): [
     TemplateResult,
@@ -1445,6 +1530,24 @@ export class ElecSankey extends LitElement {
     const width = this._rateToWidth(consumer.rate);
     const xEnd = topRightX;
     const yEnd = topRightY + width / 2;
+    let colorEnd: string | null = null;
+    if (consumer.mix && consumer.rate > 0.01) {
+      if (consumer.mix.rateBattery < 0) {
+        console.warn(
+          "Suppressing negative battery energy value:",
+          consumer.mix.rateBattery
+        );
+        consumer.mix.rateBattery = 0;
+      }
+      colorEnd = mix3Hexes(
+        this._gridColor(),
+        this._genColor(),
+        this._battColor(),
+        clip(consumer.mix.rateGrid / consumer.rate, 0, 1),
+        clip(consumer.mix.rateGeneration / consumer.rate, 0, 1),
+        clip(consumer.mix.rateBattery / consumer.rate, 0, 1)
+      );
+    }
     const svgFlow = renderFlowByCorners(
       topLeftX,
       topLeftY,
@@ -1455,14 +1558,18 @@ export class ElecSankey extends LitElement {
       topRightX + PAD_ANTIALIAS,
       topRightY + width,
       "consumer",
-      color
+      colorStart,
+      colorEnd
     );
+    if (!colorEnd) {
+      colorEnd = colorStart;
+    }
     const extrasLength = this._getExtrasLength();
     const svgExtras = this._insertExtras(
       topRightX,
       topRightY,
       width,
-      color,
+      colorEnd,
       consumer
     );
 
@@ -1470,20 +1577,39 @@ export class ElecSankey extends LitElement {
       ? undefined
       : consumer.id;
     const divHeight = CONSUMER_LABEL_HEIGHT;
+
+    // prettier-ignore
     const divRet = html`<div
       class="label elecroute-label-consumer"
       style="height:${divHeight}px;
       top: ${yEnd * svgScaleX -
       (count * divHeight) / 2}px; margin: ${-divHeight / 2}px 0 0 0;"
     >
-      ${this._generateLabelDiv(id, undefined, consumer.text, consumer.rate)}
-    </div>`;
+      <span class="label-text"
+        >${this._generateLabelDiv(id, undefined, consumer.text, consumer.rate)}</span
+        >${
+          consumer.mix
+          ? html`<div class="hover-info"
+              >${
+          renderPieChart([
+            consumer.mix.rateBattery,
+            consumer.mix.rateGeneration,
+            consumer.mix.rateGrid
+          ], [
+            this._battColor(),
+            this._genColor(),
+            this._gridColor()
+          ],
+            15
+          )
+        }`
+        : nothing}</div>`;
 
     const svgArrow = svg`
       <polygon points="${extrasLength},${yEnd - width / 2}
         ${extrasLength},${yEnd + width / 2}
         ${extrasLength + ARROW_HEAD_LENGTH},${yEnd}"
-        style="fill:${color}" />
+        style="fill:${colorEnd}" />
     `;
 
     const bottomLeftY = topLeftY + (consumer.rate !== 0 ? width : 0);
@@ -1826,7 +1952,7 @@ export class ElecSankey extends LitElement {
     battToConsFlow: number
   ): string {
     const total = genToConsFlow + gridToConsFlow + battToConsFlow;
-    if (total === 0) {
+    if (total < 0.01) {
       return this._gridColor();
     }
     return mix3Hexes(
@@ -2281,8 +2407,31 @@ export class ElecSankey extends LitElement {
         justify-content: left;
         padding-left: 6px;
         white-space: pre;
+      }
+      .label-text {
         overflow: hidden;
         text-overflow: ellipsis;
+        align-items: center;
+        max-height: 100%;
+      }
+
+      .hover-info {
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        border-radius: 4px;
+        bottom: 5px;
+        left: -30px;
+        font-size: 8px;
+        background: transparent;
+        transition:
+          visibility 0s,
+          opacity 0.2s ease-in-out;
+      }
+
+      .elecroute-label-consumer:hover .hover-info {
+        visibility: visible;
+        opacity: 1;
       }
       svg {
         rect {
