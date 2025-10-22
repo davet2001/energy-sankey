@@ -210,6 +210,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
       for (let powerEntityId of powerEntityIds) {
         const power = Math.abs(+_hass.states[powerEntityId].state);
         if (power > maxPower) {
+          maxPower = power;
           mostLikelyPowerEntityId = powerEntityId;
         }
       }
