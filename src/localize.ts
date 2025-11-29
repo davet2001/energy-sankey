@@ -14,6 +14,7 @@ import * as fr from "./translations/fr.json";
 // import * as hu from "./translations/hu.json";
 // import * as id from "./translations/id.json";
 import * as it from "./translations/it.json";
+import * as ja from "./translations/ja.json";
 // import * as ko_KR from "./translations/ko-KR.json";
 // import * as nb from "./translations/nb.json";
 // import * as nl from "./translations/nl.json";
@@ -47,6 +48,7 @@ export const languages: Record<string, unknown> = {
   //   hu,
   //   id,
   it,
+  ja,
   //   "ko-KR": ko_KR,
   //   nb,
   //   nl,
