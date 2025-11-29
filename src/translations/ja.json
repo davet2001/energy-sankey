@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "その他",
+      "home": "ホーム",
+      "untracked": "追跡外"
+    },
+    "power_sankey": {
+      "live_power_flow": "ライブ電力フロー"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "今日のエネルギー使用量"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "タイトル",
+        "max_consumer_branches": "消費デバイスの最大表示数(0で無制限)",
+        "appearance": "外観",
+        "advanced_options": "詳細設定"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "系統からの電力 (任意)",
+        "power_to_grid_entity": "系統への電力 (任意)",
+        "generation_entity": "発電からの電力 (任意)",
+        "hide_small_consumers": "20W以下の消費をグループ化する",
+        "invert_battery_flows": "蓄電器の電力は＋で充電を示します",
+        "battery_charge_only_from_generation": "蓄電器は発電からの電力でのみ充電する",
+        "battery_hint_std": "蓄電器からの放電(入出力をまとめた値、＋は放電を示します)",
+        "battery_hint_inverted": "蓄電器への充電 (入出力をまとめた値、＋は充電を示します)",
+        "independent_grid_in_out": "充電と放電で異なるセンサーを割り当てる"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "0.1kWh以下の消費をグループ化する",
+        "battery_charge_only_from_generation": "蓄電器は発電からの電力でのみ充電する"
+      }
+    }
+  }
+}
