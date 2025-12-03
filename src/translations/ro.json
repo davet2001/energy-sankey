@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "Altele",
+      "home": "Acasa",
+      "untracked": "Nemonitorizata"
+    },
+    "power_sankey": {
+      "live_power_flow": "Flux Energie in timp real"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Distributia Energiei Azi"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Titlu",
+        "max_consumer_branches": "Limiteaza numarul de consumatori (0 pentru nelimitat)",
+        "appearance": "Aspect",
+        "advanced_options": "Optiuni Avansate"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Energie din retea (optional)",
+        "power_to_grid_entity": "Energie catre retea (optional)",
+        "generation_entity": "Energie produsa solar/generator (optional)",
+        "hide_small_consumers": "Grupeaza consumatorii sub 20W",
+        "invert_battery_flows": "Bateria are valori pozitive la incarcare",
+        "battery_charge_only_from_generation": "Bateriile se incarca doar din energie produsa solar/generator",
+        "battery_hint_std": "Energie din baterie (combinata in/out pe baterie, pozitiva = descarcare)",
+        "battery_hint_inverted": "Energie catre baterie (combinata in/out pe baterie, pozitiva = incarcare)",
+        "independent_grid_in_out": "Foloseste senzori separati pentru retea in/out"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Grupeaza consumatorii sub 0.1kWh",
+        "battery_charge_only_from_generation": "Bateriile se pot incarca doar din energie produsa"
+      }
+    }
+  }
+}
