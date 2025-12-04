@@ -21,7 +21,7 @@ import * as ja from "./translations/ja.json";
 // import * as pl from "./translations/pl.json";
 import * as pt_BR from "./translations/pt-BR.json";
 // import * as pt_PT from "./translations/pt-PT.json";
-// import * as ro from "./translations/ro.json";
+import * as ro from "./translations/ro.json";
 // import * as ru from "./translations/ru.json";
 // import * as sl from "./translations/sl.json";
 // import * as sk from "./translations/sk.json";
