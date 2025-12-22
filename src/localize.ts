@@ -17,7 +17,7 @@ import * as it from "./translations/it.json";
 import * as ja from "./translations/ja.json";
 // import * as ko_KR from "./translations/ko-KR.json";
 // import * as nb from "./translations/nb.json";
-// import * as nl from "./translations/nl.json";
+import * as nl from "./translations/nl.json";
 // import * as pl from "./translations/pl.json";
 import * as pt_BR from "./translations/pt-BR.json";
 // import * as pt_PT from "./translations/pt-PT.json";
@@ -51,7 +51,7 @@ export const languages: Record<string, unknown> = {
   ja,
   //   "ko-KR": ko_KR,
   //   nb,
-  //   nl,
+  nl,
   //   pl,
   "pt-BR": pt_BR,
   //   "pt-PT": pt_PT,

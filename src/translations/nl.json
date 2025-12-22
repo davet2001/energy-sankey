@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "Overig",
+      "home": "Thuis",
+      "untracked": "Niet gevolgd"
+    },
+    "power_sankey": {
+      "live_power_flow": "Huidige vermogensstroom"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Energieverdeling vandaag"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Titel",
+        "max_consumer_branches": "Aantal verbruikers beperken (0 voor onbeperkt)",
+        "appearance": "Uiterlijk",
+        "advanced_options": "Geavanceerde opties"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Vermogen vanuit het net (optioneel)",
+        "power_to_grid_entity": "Vermogen naar het net (optioneel)",
+        "generation_entity": "Vermogen vanuit opwekking (optioneel)",
+        "hide_small_consumers": "Groepeer verbruikers onder 20W",
+        "invert_battery_flows": "Batterijstroom is positief bij opladen",
+        "battery_charge_only_from_generation": "Batterijen alleen opladen vanuit opgewekt vermogen",
+        "battery_hint_std": "Vermogen vanuit batterij (in/uit gecombineerd per batterij, positief = ontladen)",
+        "battery_hint_inverted": "Vermogen naar batterij (in/uit gecombineerd per batterij, positief = opladen)",
+        "independent_grid_in_out": "Gebruik aparte sensoren voor vanuit/naar het net"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Groepeer verbruikers onder 0.1kWh",
+        "battery_charge_only_from_generation": "Batterijen alleen opladen vanuit opgewekte energie"
+      }
+    }
+  }
+}
