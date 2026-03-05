@@ -267,7 +267,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
           power_from_grid_entity =
             await this.getPowerEntityIdForEnergyEntityIdWithFail(
               _hass,
-              source.flow_from[0].stat_energy_from,
+              source.stat_energy_from!,
               extEntities
             );
           returnConfig.power_from_grid_entity = power_from_grid_entity;

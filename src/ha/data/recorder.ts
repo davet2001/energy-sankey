@@ -1,10 +1,12 @@
-import { Connection } from "home-assistant-js-websocket";
+import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HaDurationData } from "../components/ha-duration-input";
-import { HomeAssistant } from "../types";
+import type { HaDurationData } from "../components/ha-duration-input";
+import type { HomeAssistant } from "../types";
+import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
   backlog: number | null;
+  db_in_default_location: boolean;
   max_backlog: number;
   migration_in_progress: boolean;
   migration_is_live: boolean;
@@ -14,9 +16,9 @@ export interface RecorderInfo {
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
-export interface Statistics {
-  [statisticId: string]: StatisticValue[];
-}
+export type StatisticPeriod = "5minute" | "hour" | "day" | "week" | "month";
+
+export type Statistics = Record<string, StatisticValue[]>;
 
 export interface StatisticValue {
   start: number;
@@ -37,22 +39,38 @@ export interface Statistic {
   change: number | null;
 }
 
+export enum StatisticMeanType {
+  NONE = 0,
+  ARITHMETIC = 1,
+  CIRCULAR = 2,
+}
+
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
   has_sum: boolean;
-  has_mean: boolean;
+  mean_type: StatisticMeanType;
   unit_class: string | null;
 }
+
+export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
+  "entity_not_recorded",
+  "entity_no_longer_recorded",
+  "state_class_removed",
+  "units_changed",
+  "mean_type_changed",
+  "no_state",
+];
 
 export type StatisticsValidationResult =
   | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
-  | StatisticsValidationResultUnsupportedStateClass
-  | StatisticsValidationResultUnitsChanged;
+  | StatisticsValidationResultStateClassRemoved
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultMeanTypeChanged;
 
 export interface StatisticsValidationResultNoState {
   type: "no_state";
@@ -69,9 +87,9 @@ export interface StatisticsValidationResultEntityNotRecorded {
   data: { statistic_id: string };
 }
 
-export interface StatisticsValidationResultUnsupportedStateClass {
-  type: "unsupported_state_class";
-  data: { statistic_id: string; state_class: string };
+export interface StatisticsValidationResultStateClassRemoved {
+  type: "state_class_removed";
+  data: { statistic_id: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
@@ -79,10 +97,23 @@ export interface StatisticsValidationResultUnitsChanged {
   data: {
     statistic_id: string;
     state_unit: string;
+    state_unit_class: string | null;
     metadata_unit: string;
+    metadata_unit_class: string | null;
     supported_unit: string;
   };
 }
+
+export interface StatisticsValidationResultMeanTypeChanged {
+  type: "mean_type_changed";
+  data: {
+    statistic_id: string;
+    state_mean_type: StatisticMeanType;
+    metadata_mean_type: StatisticMeanType;
+  };
+}
+
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
@@ -98,10 +129,10 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "L" | "gal" | "ft³" | "m³";
+  volume?: (typeof VOLUME_UNITS)[number];
 }
 
-const statisticTypes = [
+const _statisticTypes = [
   "change",
   "last_reset",
   "max",
@@ -110,11 +141,12 @@ const statisticTypes = [
   "state",
   "sum",
 ] as const;
-export type StatisticsTypes = (typeof statisticTypes)[number][];
+export type StatisticsTypes = (typeof _statisticTypes)[number][];
 
-export interface StatisticsValidationResults {
-  [statisticId: string]: StatisticsValidationResult[];
-}
+export type StatisticsValidationResults = Record<
+  string,
+  StatisticsValidationResult[]
+>;
 
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({
@@ -144,7 +176,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
+  period: StatisticPeriod = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
 ) =>
@@ -184,7 +216,14 @@ export const fetchStatistic = (
               : period.fixed_period.end,
         }
       : undefined,
-    calendar: period.calendar,
+    calendar: period.calendar
+      ? {
+          ...(period.calendar.period === "week"
+            ? { first_weekday: firstWeekday(hass.locale).substring(0, 3) }
+            : {}),
+          ...period.calendar,
+        }
+      : undefined,
     rolling_window: period.rolling_window,
   });
 
@@ -196,22 +235,24 @@ export const validateStatistics = (hass: HomeAssistant) =>
 export const updateStatisticsMetadata = (
   hass: HomeAssistant,
   statistic_id: string,
-  unit_of_measurement: string | null
+  unit_of_measurement: string | null,
+  unit_class: string | null
 ) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
+    unit_class,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values?: StatisticValue[]
 ): number | null => {
   let growth: number | null = null;
 
@@ -270,7 +311,10 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) {
+  if (
+    mean_stat_types.includes(type) &&
+    metadata.mean_type !== StatisticMeanType.NONE
+  ) {
     return true;
   }
   if (sum_stat_types.includes(type) && metadata.has_sum) {
@@ -287,7 +331,7 @@ export const adjustStatisticsSum = (
   adjustment_unit_of_measurement: string | null
 ): Promise<void> => {
   const start_time_iso = new Date(start_time).toISOString();
-  return hass.callWS({
+  return hass.callWS<undefined>({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time: start_time_iso,
@@ -324,3 +368,6 @@ export const getDisplayUnit = (
 
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
+
+export const updateStatisticsIssues = (hass: HomeAssistant) =>
+  hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });

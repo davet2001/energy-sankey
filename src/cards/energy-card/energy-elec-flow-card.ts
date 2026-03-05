@@ -168,25 +168,25 @@ export class EnergyElecFlowCard
     const types = energySourcesByType(prefs);
 
     if (types.grid && types.grid.length > 0) {
-      if (types.grid[0].flow_from.length > 0) {
+      if (types.grid[0].stat_energy_from) {
         const totalFromGrid =
           calculateStatisticsSumGrowth(
             energyData.stats,
-            types.grid[0].flow_from.map((flow) => flow.stat_energy_from)
+            [types.grid[0].stat_energy_from]
           ) ?? 0;
-        const gridInId = types.grid[0].flow_from[0].stat_energy_from;
+        const gridInId = types.grid[0].stat_energy_from;
         this._gridInRoute = {
           id: gridInId,
           rate: totalFromGrid,
         };
       }
-      if (types.grid[0].flow_to.length > 0) {
+      if (types.grid[0].stat_energy_to) {
         const totalToGrid =
           calculateStatisticsSumGrowth(
             energyData.stats,
-            types.grid[0].flow_to.map((flow) => flow.stat_energy_to)
+            [types.grid[0].stat_energy_to]
           ) ?? 0;
-        const gridOutId = types.grid[0].flow_to[0].stat_energy_to;
+        const gridOutId = types.grid[0].stat_energy_to;
         this._gridOutRoute = {
           id: gridOutId,
           rate: totalToGrid,
