@@ -25,7 +25,8 @@
     "date-fns-tz": "^3.2.0",
     "home-assistant-js-websocket": "^9.4.0",
     "memoize-one": "^6.0.0",
-    "sortablejs": "^1.15.6"
+    "sortablejs": "^1.15.6",
+    "weekstart": "^2.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.1",
