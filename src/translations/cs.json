@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Export do sítě (nepovinné)",
         "generation_entity": "Výroba (nepovinné)",
         "hide_small_consumers": "Nerozlišovat spotřebu pod 20W",
+        "hide_zero_consumers": "Skrýt zařízení s nulovým odběrem",
         "invert_battery_flows": "Nabíjení baterie je kladné číslo",
         "battery_charge_only_from_generation": "Baterie se nabíjejí pouze z vyrobené energie",
         "battery_hint_std": "Energie z baterií (kombinované nabíjení/vybíjení, kladná hodnota = vybíjení)",

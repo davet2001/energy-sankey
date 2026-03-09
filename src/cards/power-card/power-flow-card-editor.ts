@@ -31,6 +31,7 @@ const POWER_LABELS = [
   "power_to_grid_entity",
   "generation_entity",
   "hide_small_consumers",
+  "hide_zero_consumers",
   "invert_battery_flows",
   "battery_charge_only_from_generation",
   "independent_grid_in_out",
@@ -107,6 +108,10 @@ export class PowerFlowCardEditor
             selector: { boolean: {} },
           },
           {
+            name: "hide_zero_consumers",
+            selector: { boolean: {} },
+          },
+          {
             name: "invert_battery_flows",
             selector: { boolean: {} },
           },
@@ -134,10 +139,10 @@ export class PowerFlowCardEditor
   public setConfig(config: PowerFlowCardConfig): void {
     this._config = verifyAndMigrateConfig(config);
     this._configBatteryEntities = processEditorEntities(
-      this._config.battery_entities
+      this._config.battery_entities,
     );
     this._configConsumerEntities = processEditorEntities(
-      this._config.consumer_entities
+      this._config.consumer_entities,
     );
   }
 
@@ -151,7 +156,7 @@ export class PowerFlowCardEditor
       return customLocalize(`editor.card.power_sankey.${schema.name}`);
     }
     return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`,
     );
   };
 
@@ -264,6 +269,11 @@ export class PowerFlowCardEditor
         configValue = "hide_small_consumers";
         value = value.hide_small_consumers;
       } else if (
+        value.hide_zero_consumers != this._config.hide_zero_consumers
+      ) {
+        configValue = "hide_zero_consumers";
+        value = value.hide_zero_consumers;
+      } else if (
         value.invert_battery_flows != this._config.invert_battery_flows
       ) {
         configValue = "invert_battery_flows";
@@ -306,7 +316,7 @@ export class PowerFlowCardEditor
           consumer_entities: newConfigEntities,
         };
         this._configConsumerEntities = processEditorEntities(
-          this._config!.consumer_entities
+          this._config!.consumer_entities,
         );
       } else if (
         ev.currentTarget &&
@@ -317,7 +327,7 @@ export class PowerFlowCardEditor
           battery_entities: newConfigEntities,
         };
         this._configBatteryEntities = processEditorEntities(
-          this._config!.battery_entities
+          this._config!.battery_entities,
         );
       }
     } else if (configValue) {

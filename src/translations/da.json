@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Energi til nettet (optional)",
         "generation_entity": "Energi fra produktion (optional)",
         "hide_small_consumers": "Gruppér under 20W",
+        "hide_zero_consumers": "Skjul enheder uden forbrug",
         "invert_battery_flows": "Batteri flow er positiv ved opladning",
         "battery_charge_only_from_generation": "Batterier kan kun oplade fra produceret energi",
         "battery_hint_std": "Energi fra batteri (En samlet for ind/ud per batteri, positiv = afladning)",

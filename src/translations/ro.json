@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Energie catre retea (optional)",
         "generation_entity": "Energie produsa solar/generator (optional)",
         "hide_small_consumers": "Grupeaza consumatorii sub 20W",
+        "hide_zero_consumers": "Ascunde dispozitivele fără consum",
         "invert_battery_flows": "Bateria are valori pozitive la incarcare",
         "battery_charge_only_from_generation": "Bateriile se incarca doar din energie produsa solar/generator",
         "battery_hint_std": "Energie din baterie (combinata in/out pe baterie, pozitiva = descarcare)",

@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Puissance vers le réseaux (optionnel)",
         "generation_entity": "Puissance depuis les générateur/solaire (optionnel)",
         "hide_small_consumers": "Groupper les consommateurs de moins de 20W",
+        "hide_zero_consumers": "Masquer les appareils sans consommation",
         "invert_battery_flows": "Le flux de batterie sont positifs pour la charge",
         "battery_charge_only_from_generation": "Les batteries ne peuvent se charger qu'à partir de l'énergie générée",
         "battery_hint_std": "Puissance depuis les batteries (une entrée/sortie combinée par batterie, positive = décharge)",

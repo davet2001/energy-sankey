@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Netzeinspeisung (optional)",
         "generation_entity": "Solarleistung (optional)",
         "hide_small_consumers": "Gruppiere Verbraucher unter 20W",
+        "hide_zero_consumers": "Geräte ohne Verbrauch ausblenden",
         "invert_battery_flows": "Batteriefluss für Laden ist positiv",
         "battery_charge_only_from_generation": "Batterien werden nur über Solar geladen",
         "battery_hint_std": "Entladeleistung der Batterie (Ein- und Ausgang kombiniert, positiver Wert = Entladen)",

@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Vermogen naar het net (optioneel)",
         "generation_entity": "Vermogen vanuit opwekking (optioneel)",
         "hide_small_consumers": "Groepeer verbruikers onder 20W",
+        "hide_zero_consumers": "Verberg apparaten zonder verbruik",
         "invert_battery_flows": "Batterijstroom is positief bij opladen",
         "battery_charge_only_from_generation": "Batterijen alleen opladen vanuit opgewekt vermogen",
         "battery_hint_std": "Vermogen vanuit batterij (in/uit gecombineerd per batterij, positief = ontladen)",
