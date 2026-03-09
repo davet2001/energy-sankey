@@ -48,6 +48,7 @@ const DEFAULT_CONFIG: PowerFlowCardConfig = {
   power_to_grid_entity: undefined,
   invert_battery_flows: false,
   hide_small_consumers: false,
+  hide_zero_consumers: false,
   max_consumer_branches: 0,
   independent_grid_in_out: false,
 };
@@ -147,7 +148,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   }
 
   private static async getExtendedEntityRegistryEntries(
-    _hass: HomeAssistant
+    _hass: HomeAssistant,
   ): Promise<{ [id: string]: ExtEntityRegistryEntry }> {
     // Get the full list of all extended entity registry entries as a dict.
 
@@ -167,7 +168,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   private static async getPowerEntityIdForEnergyEntityId(
     _hass: HomeAssistant,
     energyEntityId: string,
-    extEntities: { [id: string]: ExtEntityRegistryEntry }
+    extEntities: { [id: string]: ExtEntityRegistryEntry },
   ): Promise<string> {
     /**
      * Given an energy entity ID, find the associated power entity ID.
@@ -221,7 +222,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   private static async getPowerEntityIdForEnergyEntityIdWithFail(
     _hass: HomeAssistant,
     energyEntityId: string,
-    extEntities: { [id: string]: ExtEntityRegistryEntry }
+    extEntities: { [id: string]: ExtEntityRegistryEntry },
   ): Promise<string> {
     /**
      * Given an energy entity ID, find the associated power entity ID.
@@ -230,7 +231,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
     let powerEntityId = await this.getPowerEntityIdForEnergyEntityId(
       _hass,
       energyEntityId,
-      extEntities
+      extEntities,
     );
     if (!powerEntityId) {
       powerEntityId =
@@ -240,7 +241,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   }
 
   public static async getStubConfig(
-    _hass: HomeAssistant
+    _hass: HomeAssistant,
   ): Promise<PowerFlowCardConfig> {
     /**
      * We go on a bit of a hunt to get the stub config.
@@ -268,7 +269,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
             await this.getPowerEntityIdForEnergyEntityIdWithFail(
               _hass,
               source.stat_energy_from!,
-              extEntities
+              extEntities,
             );
           returnConfig.power_from_grid_entity = power_from_grid_entity;
           break;
@@ -278,7 +279,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
           generation_entity = await this.getPowerEntityIdForEnergyEntityId(
             _hass,
             source.stat_energy_from,
-            extEntities
+            extEntities,
           );
           if (generation_entity) {
             returnConfig.generation_entity = generation_entity;
@@ -289,7 +290,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
           batteryEntity = await this.getPowerEntityIdForEnergyEntityId(
             _hass,
             source.stat_energy_from,
-            extEntities
+            extEntities,
           );
           if (batteryEntity) {
             returnConfig.battery_entities.push({ entity: batteryEntity });
@@ -318,7 +319,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
       const entityId = await this.getPowerEntityIdForEnergyEntityId(
         _hass,
         consumer.stat_consumption,
-        extEntities
+        extEntities,
       );
       if (entityId) {
         returnConfig.consumer_entities.push({ entity: entityId });
@@ -328,7 +329,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
   }
 
   protected _getValues(
-    config: PowerFlowCardConfig
+    config: PowerFlowCardConfig,
   ):
     | [
         ElecRoute | null,
@@ -352,7 +353,7 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
           <hui-warning>
             ${createEntityNotFoundWarning(
               this.hass,
-              config.power_from_grid_entity
+              config.power_from_grid_entity,
             )}
           </hui-warning>
         `;
@@ -407,10 +408,14 @@ export class PowerFlowCard extends ElecFlowCardBase implements LovelaceCard {
         if (!name) {
           name = computeStateName(stateObj);
         }
+        const rate = computePower(stateObj);
+        if (config.hide_zero_consumers && Math.abs(rate) == 0) {
+          continue;
+        }
         consumerRoutes[entity.entity] = {
           id: entity.entity,
           text: name,
-          rate: computePower(stateObj),
+          rate: rate,
         };
       }
     }

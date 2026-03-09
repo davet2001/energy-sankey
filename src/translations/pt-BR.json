@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Potência para a rede (opcional)",
         "generation_entity": "Potência da geração (opcional)",
         "hide_small_consumers": "Grupo de consumidores abaixo de 20W",
+        "hide_zero_consumers": "Ocultar dispositivos sem consumo",
         "invert_battery_flows": "Os fluxos da bateria são positivos ao carregar",
         "battery_charge_only_from_generation": "As baterias só podem ser carregadas com energia gerada",
         "battery_hint_std": "Potência da bateria (uma entrada/saída combinada por bateria, positivo = descarregando)",

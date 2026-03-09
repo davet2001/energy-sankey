@@ -25,6 +25,7 @@
         "power_to_grid_entity": "Power to grid (optional)",
         "generation_entity": "Power from generation (optional)",
         "hide_small_consumers": "Group consumers below 20W",
+        "hide_zero_consumers": "Hide devices with zero consumption",
         "invert_battery_flows": "Battery flows are positive for charging",
         "battery_charge_only_from_generation": "Batteries can only charge from generated power",
         "battery_hint_std": "Power from battery (one combined in/out per battery, positive = discharging)",

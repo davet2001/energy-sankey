@@ -25,6 +25,7 @@
         "power_to_grid_entity": "系統への電力 (任意)",
         "generation_entity": "発電からの電力 (任意)",
         "hide_small_consumers": "20W以下の消費をグループ化する",
+        "hide_zero_consumers": "消費がゼロのデバイスを非表示にする",
         "invert_battery_flows": "蓄電器の電力は＋で充電を示します",
         "battery_charge_only_from_generation": "蓄電器は発電からの電力でのみ充電する",
         "battery_hint_std": "蓄電器からの放電(入出力をまとめた値、＋は放電を示します)",
