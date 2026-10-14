@@ -1,0 +1,40 @@
+{
+  "card": {
+    "generic": {
+      "other": "Ostatné",
+      "home": "Domov",
+      "untracked": "Nerozlíšené"
+    },
+    "power_sankey": {
+      "live_power_flow": "Aktuálny tok energie"
+    },
+    "energy_sankey": {
+      "energy_distribution_today": "Dnešná distribúcia"
+    }
+  },
+  "editor": {
+    "card": {
+      "generic": {
+        "title": "Nadpis",
+        "max_consumer_branches": "Maximálny počet zariadení (0 pre neobmedzené množstvo)",
+        "appearance": "Zobrazenie",
+        "advanced_options": "Ďalšie nastavenia"
+      },
+      "power_sankey": {
+        "power_from_grid_entity": "Import zo siete (voliteľné)",
+        "power_to_grid_entity": "Export do siete (voliteľné)",
+        "generation_entity": "Výroba (nepovinné)",
+        "hide_small_consumers": "Nerozlišovať spotrebu pod 20 W",
+        "invert_battery_flows": "Nabíjanie batérie je kladné číslo",
+        "battery_charge_only_from_generation": "Batérie sa nabíjajú výlučne z vyrobenej energie",
+        "battery_hint_std": "Energia z batérií (kombinované nabíjanie/vybíjanie, kladná hodnota = vybíjanie)",
+        "battery_hint_inverted": "Energia do batérií (kombinované nabíjanie/vybíjanie, kladná hodnota = nabíjanie)",
+        "independent_grid_in_out": "Samostatné senzory na import/export do siete"
+      },
+      "energy_sankey": {
+        "hide_small_consumers": "Nerozlišovať spotrebu pod 0,1 kWh",
+        "battery_charge_only_from_generation": "Batérie sa nabíjajú výlučne z vyrobenej energie"
+      }
+    }
+  }
+}
